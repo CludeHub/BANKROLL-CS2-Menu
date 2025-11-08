@@ -1,186 +1,247 @@
+--// Bankroll Mafia UI Library
+--// designed based on your reference image
+
 local Bankroll = {}
-Bankroll.__index = Bankroll
+Bankroll.Accent = Color3.fromRGB(190, 120, 255)
 
+local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+local player = Players.LocalPlayer
+local pgui = player:WaitForChild("PlayerGui")
 
----------------------------------------------------------------------
--- CREATE WINDOW
----------------------------------------------------------------------
-function Bankroll:AddWindow(windowName)
+--==========================================================
+-- Window Constructor
+--==========================================================
+function Bankroll:CreateWindow(title)
+    local UI = {}
+
     local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = windowName or "BankrollUI"
+    ScreenGui.IgnoreGuiInset = true
     ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    ScreenGui.Parent = pgui
 
-    local Frame = Instance.new("Frame")
-    Frame.Active = true
-    Frame.BorderSizePixel = 0
-    Frame.BackgroundColor3 = Color3.fromRGB(16, 16, 16)
-    Frame.Size = UDim2.new(0.44196, 0, 0.87707, 0)
-    Frame.Position = UDim2.new(0.27728, 0, 0.01587, 0)
-    Frame.Parent = ScreenGui
+    local Main = Instance.new("Frame")
+    Main.Size = UDim2.new(0, 620, 0, 420)
+    Main.Position = UDim2.new(0.5, -310, 0.5, -210)
+    Main.BackgroundColor3 = Color3.fromRGB(10,10,10)
+    Main.BorderSizePixel = 0
+    Main.Active = true
+    Main.Draggable = true
+    Main.Parent = ScreenGui
 
-    local Aspect = Instance.new("UIAspectRatioConstraint")
-    Aspect.AspectRatio = 1.19005
-    Aspect.Parent = Frame
+    local Topbar = Instance.new("TextLabel")
+    Topbar.Text = title
+    Topbar.Size = UDim2.new(1,0,0,32)
+    Topbar.BackgroundColor3 = Color3.fromRGB(15,15,15)
+    Topbar.BorderSizePixel = 0
+    Topbar.TextColor3 = Color3.fromRGB(200,200,200)
+    Topbar.Font = Enum.Font.GothamBold
+    Topbar.TextSize = 14
+    Topbar.Parent = Main
 
-    -- Header
-    local Header = Instance.new("Frame")
-    Header.BorderSizePixel = 0
-    Header.BackgroundColor3 = Color3.fromRGB(27, 27, 27)
-    Header.Size = UDim2.new(1, 0, 0.04525, 0)
-    Header.Parent = Frame
+    local Divider = Instance.new("Frame")
+    Divider.Size = UDim2.new(1,0,0,2)
+    Divider.Position = UDim2.new(0,0,0,32)
+    Divider.BackgroundColor3 = Bankroll.Accent
+    Divider.BorderSizePixel = 0
+    Divider.Parent = Main
 
-    local Title = Instance.new("TextLabel")
-    Title.BorderSizePixel = 0
-    Title.BackgroundTransparency = 1
-    Title.FontFace = Font.new("rbxasset://fonts/families/SourceSansPro.json", Enum.FontWeight.Bold)
-    Title.TextColor3 = Color3.fromRGB(238,165,255)
-    Title.TextScaled = true
-    Title.Text = windowName or "Bankroll"
-    Title.Size = UDim2.new(0.19011, 0, 0.85, 0)
-    Title.Position = UDim2.new(0.36, 0, 0, 0)
-    Title.Parent = Header
+    -- container
+    local Content = Instance.new("Frame")
+    Content.Size = UDim2.new(1, -20, 1, -80)
+    Content.Position = UDim2.new(0,10,0,40)
+    Content.BackgroundTransparency = 1
+    Content.Parent = Main
 
-    local HeaderLine = Instance.new("Frame")
-    HeaderLine.BorderSizePixel = 0
-    HeaderLine.BackgroundColor3 = Color3.fromRGB(161,112,173)
-    HeaderLine.Size = UDim2.new(1,0,0.05,0)
-    HeaderLine.Position = UDim2.new(0,0,1,0)
-    HeaderLine.Parent = Header
+    UI._content = Content
+    UI._tabs = {}
 
-    -- Bottom Tabs Bar
-    local Bottom = Instance.new("Frame")
-    Bottom.BorderSizePixel = 0
-    Bottom.BackgroundColor3 = Color3.fromRGB(27,27,27)
-    Bottom.Size = UDim2.new(1,0,0.09955,0)
-    Bottom.Position = UDim2.new(0,0,0.90045,0)
-    Bottom.Parent = Frame
+    --==========================================================
+    -- Bottom Tabs
+    --==========================================================
+    local TabBar = Instance.new("Frame")
+    TabBar.Size = UDim2.new(1,0,0,35)
+    TabBar.Position = UDim2.new(0,0,1,-35)
+    TabBar.BackgroundColor3 = Color3.fromRGB(15,15,15)
+    TabBar.BorderSizePixel = 0
+    TabBar.Parent = Main
 
-    local BottomLine = Instance.new("Frame")
-    BottomLine.BorderSizePixel = 0
-    BottomLine.BackgroundColor3 = Color3.fromRGB(161,111,173)
-    BottomLine.Size = UDim2.new(1,0,0.02273,0)
-    BottomLine.Position = UDim2.new(0,0,-0.02273,0)
-    BottomLine.Parent = Bottom
+    local TabLayout = Instance.new("UIListLayout")
+    TabLayout.FillDirection = Enum.FillDirection.Horizontal
+    TabLayout.Padding = UDim.new(0,6)
+    TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    TabLayout.VerticalAlignment = Enum.VerticalAlignment.Center
+    TabLayout.Parent = TabBar
 
-    local TabHolder = Instance.new("UIListLayout")
-    TabHolder.Parent = Bottom
-    TabHolder.FillDirection = Enum.FillDirection.Horizontal
-    TabHolder.VerticalAlignment = Enum.VerticalAlignment.Center
-    TabHolder.HorizontalAlignment = Enum.HorizontalAlignment.Center
-    TabHolder.Padding = UDim.new(0,12)
+    function UI:CreateTab(name)
+        local Tab = {}
+        
+        local Btn = Instance.new("TextButton")
+        Btn.Text = name
+        Btn.Font = Enum.Font.Gotham
+        Btn.TextSize = 13
+        Btn.TextColor3 = Color3.fromRGB(180,180,180)
+        Btn.AutoButtonColor = false
+        Btn.Size = UDim2.new(0,80,1,-10)
+        Btn.BackgroundTransparency = 1
+        Btn.Parent = TabBar
 
-    -- Container
-    local Container = Instance.new("Frame")
-    Container.BackgroundTransparency = 1
-    Container.Size = UDim2.new(0.94677, 0, 0.80995, 0)
-    Container.Position = UDim2.new(0.02662, 0, 0.06335, 0)
-    Container.Parent = Frame
+        local Page = Instance.new("Frame")
+        Page.Visible = false
+        Page.Size = UDim2.new(1,0,1,0)
+        Page.BackgroundTransparency = 1
+        Page.Parent = Content
 
-    local ContainerLayout = Instance.new("UIListLayout")
-    ContainerLayout.Wraps = true
-    ContainerLayout.FillDirection = Enum.FillDirection.Horizontal
-    ContainerLayout.Padding = UDim.new(0,4)
-    ContainerLayout.Parent = Container
+        Tab.Page = Page
 
-    ----------------------------------------------------------------
-    -- Left / Right Panels
-    ----------------------------------------------------------------
-    local Left = Instance.new("ScrollingFrame")
-    Left.BackgroundTransparency = 1
-    Left.Size = UDim2.new(0.49, 0, 1, 0)
-    Left.AutomaticCanvasSize = Enum.AutomaticSize.Y
-    Left.ScrollBarThickness = 0
-    Left.Name = "Left"
-    Left.Parent = Container
+        Btn.MouseButton1Click:Connect(function()
+            for _,t in pairs(UI._tabs) do
+                t.Page.Visible = false
+            end
+            Page.Visible = true
+        end)
 
-    local LeftLayout = Instance.new("UIListLayout")
-    LeftLayout.Padding = UDim.new(0,4)
-    LeftLayout.Parent = Left
+        table.insert(UI._tabs, Tab)
+        if #UI._tabs == 1 then Page.Visible = true end
 
-    local Right = Instance.new("ScrollingFrame")
-    Right.BackgroundTransparency = 1
-    Right.Size = UDim2.new(0.49, 0, 1, 0)
-    Right.Name = "Right"
-    Right.Parent = Container
+        function Tab:AddSection(title)
+            local S = {}
 
-    local RightLayout = Instance.new("UIListLayout")
-    RightLayout.Padding = UDim.new(0,4)
-    RightLayout.Parent = Right
+            local Box = Instance.new("Frame")
+            Box.Size = UDim2.new(0.48,0,0,180)
+            Box.BackgroundColor3 = Color3.fromRGB(15,15,15)
+            Box.BorderSizePixel = 0
+            Box.Parent = Page
 
-    --------------------------------------------------------------------
-    -- WINDOW OBJECT
-    --------------------------------------------------------------------
-    local window = {
-        ScreenGui = ScreenGui,
-        Frame = Frame,
-        Bottom = Bottom,
-        Container = Container,
-        Left = Left,
-        Right = Right,
-        Tabs = {}
-    }
+            local Title = Instance.new("TextLabel")
+            Title.Size = UDim2.new(1, -10, 0, 22)
+            Title.Position = UDim2.new(0,5,0,5)
+            Title.BackgroundTransparency = 1
+            Title.Text = title
+            Title.Font = Enum.Font.GothamBold
+            Title.TextColor3 = Color3.fromRGB(200,200,200)
+            Title.TextSize = 13
+            Title.TextXAlignment = Enum.TextXAlignment.Left
+            Title.Parent = Box
 
-    setmetatable(window, Bankroll)
-    return window
-end
+            local Layout = Instance.new("UIListLayout")
+            Layout.Padding = UDim.new(0,6)
+            Layout.Parent = Box
 
----------------------------------------------------------------------
--- CREATE TAB
----------------------------------------------------------------------
-function Bankroll:AddTab(tabName, icon)
-    local Button = Instance.new("TextButton")
-    Button.BackgroundColor3 = Color3.fromRGB(40,40,40)
-    Button.Text = "   " .. tabName
-    Button.Size = UDim2.new(0,120,0.7,0)
-    Button.TextColor3 = Color3.fromRGB(255,255,255)
-    Button.Parent = self.Bottom
+            S.Parent = Box
 
-    local tab = { Sections = {}, Button = Button }
+            ---------------------------------------------------
+            -- TOGGLE (Right-side small switch like the image)
+            ---------------------------------------------------
+            function S:AddToggle(name, default, callback)
+                local T = Instance.new("Frame")
+                T.Size = UDim2.new(1,-10,0,22)
+                T.BackgroundTransparency = 1
+                T.Parent = Box
 
-    Button.MouseButton1Click:Connect(function()
-        for _, s in pairs(self.Sections or {}) do
-            s.Frame.Visible = false
+                local Label = Instance.new("TextLabel")
+                Label.BackgroundTransparency = 1
+                Label.TextXAlignment = Enum.TextXAlignment.Left
+                Label.Text = name
+                Label.Font = Enum.Font.Gotham
+                Label.TextSize = 12
+                Label.TextColor3 = Color3.fromRGB(200,200,200)
+                Label.Size = UDim2.new(1,-40,1,0)
+                Label.Parent = T
+
+                local Switch = Instance.new("Frame")
+                Switch.Size = UDim2.new(0,28,0,12)
+                Switch.Position = UDim2.new(1,-32,0.5,-6)
+                Switch.BackgroundColor3 = Color3.fromRGB(50,50,50)
+                Switch.BorderSizePixel = 0
+                Switch.Parent = T
+
+                local Dot = Instance.new("Frame")
+                Dot.Size = UDim2.new(0,12,0,12)
+                Dot.Position = default and UDim2.new(1,-12,0,0) or UDim2.new(0,0,0,0)
+                Dot.BackgroundColor3 = default and Bankroll.Accent or Color3.fromRGB(120,120,120)
+                Dot.BorderSizePixel = 0
+                Dot.Parent = Switch
+
+                local state = default
+
+                local function update()
+                    TweenService:Create(Dot, TweenInfo.new(0.18, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {
+                        Position = state and UDim2.new(1,-12,0,0) or UDim2.new(0,0,0,0),
+                        BackgroundColor3 = state and Bankroll.Accent or Color3.fromRGB(120,120,120)
+                    }):Play()
+                    if callback then callback(state) end
+                end
+
+                T.InputBegan:Connect(function(inp)
+                    if inp.UserInputType == Enum.UserInputType.MouseButton1 then
+                        state = not state
+                        update()
+                    end
+                end)
+
+                update()
+            end
+
+            ---------------------------------------------------
+            -- DROPDOWN (dark, black, arrow, like image)
+            ---------------------------------------------------
+            function S:AddDropdown(name, options, callback)
+                local D = Instance.new("Frame")
+                D.Size = UDim2.new(1,-10,0,26)
+                D.BackgroundTransparency = 1
+                D.Parent = Box
+
+                local Btn = Instance.new("TextButton")
+                Btn.Size = UDim2.new(1,0,1,0)
+                Btn.BackgroundColor3 = Color3.fromRGB(20,20,20)
+                Btn.BorderSizePixel = 0
+                Btn.Text = name
+                Btn.Font = Enum.Font.Gotham
+                Btn.TextSize = 12
+                Btn.TextColor3 = Color3.fromRGB(200,200,200)
+                Btn.Parent = D
+
+                local List = Instance.new("Frame")
+                List.Visible = false
+                List.Size = UDim2.new(1,0,0,#options*22)
+                List.Position = UDim2.new(0,0,1,2)
+                List.BackgroundColor3 = Color3.fromRGB(15,15,15)
+                List.BorderSizePixel = 0
+                List.Parent = D
+
+                local layout = Instance.new("UIListLayout")
+                layout.Parent = List
+
+                for _,opt in ipairs(options) do
+                    local O = Instance.new("TextButton")
+                    O.Size = UDim2.new(1,0,0,22)
+                    O.BackgroundTransparency = 1
+                    O.Text = opt
+                    O.TextColor3 = Color3.fromRGB(200,200,200)
+                    O.Font = Enum.Font.Gotham
+                    O.TextSize = 12
+                    O.Parent = List
+
+                    O.MouseButton1Click:Connect(function()
+                        Btn.Text = opt
+                        List.Visible = false
+                        if callback then callback(opt) end
+                    end)
+                end
+
+                Btn.MouseButton1Click:Connect(function()
+                    List.Visible = not List.Visible
+                end)
+            end
+
+            return S
         end
-        for _, section in ipairs(tab.Sections) do
-            section.Frame.Visible = true
-        end
-    end)
 
-    table.insert(self.Tabs, tab)
-    return tab
+        return Tab
+    end
+
+    return UI
 end
-
----------------------------------------------------------------------
--- CREATE SECTION (LEFT or RIGHT)
----------------------------------------------------------------------
-function Bankroll:CreateSection(tab, side, title)
-    local Parent = (side == "right" or side == "Right") and self.Right or self.Left
-
-    local Section = Instance.new("Frame")
-    Section.BackgroundColor3 = Color3.fromRGB(20,20,20)
-    Section.BorderSizePixel = 0
-    Section.Size = UDim2.new(1, -10, 0, 40)
-    Section.Parent = Parent
-
-    local Label = Instance.new("TextLabel")
-    Label.BackgroundTransparency = 1
-    Label.TextColor3 = Color3.fromRGB(255,255,255)
-    Label.Text = title
-    Label.TextXAlignment = Enum.TextXAlignment.Left
-    Label.Size = UDim2.new(1,0,1,0)
-    Label.Parent = Section
-
-    local sec = {
-        Frame = Section
-    }
-
-    table.insert(tab.Sections, sec)
-    return sec
-end
-
----------------------------------------------------------------------
 
 return Bankroll
