@@ -1,4 +1,4 @@
---// BANKROLL UI LIBRARY (LEFT + RIGHT SECTIONS)
+--// BANKROLL UI LIBRARY
 local Bankroll = {}
 Bankroll.Theme = {
     Background = Color3.fromRGB(16,16,16),
@@ -8,15 +8,14 @@ Bankroll.Theme = {
 }
 
 local Players = game:GetService("Players")
-local LP = Players.LocalPlayer
+local LocalPlayer = Players.LocalPlayer
 
-
-----------------------------------------------------------------
---  WINDOW
-----------------------------------------------------------------
+-------------------------------------------------------
+-- CREATE WINDOW
+-------------------------------------------------------
 function Bankroll:CreateWindow(titleText)
     local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Parent = LP:WaitForChild("PlayerGui")
+    ScreenGui.Parent = LocalPlayer.PlayerGui
 
     local Main = Instance.new("Frame")
     Main.Size = UDim2.new(0.45,0,0.88,0)
@@ -29,7 +28,7 @@ function Bankroll:CreateWindow(titleText)
     local Aspect = Instance.new("UIAspectRatioConstraint", Main)
     Aspect.AspectRatio = 1.19
 
-    -- HEADER
+    -- TOP HEADER
     local Header = Instance.new("Frame")
     Header.Size = UDim2.new(1,0,0.045,0)
     Header.BackgroundColor3 = self.Theme.Header
@@ -47,15 +46,15 @@ function Bankroll:CreateWindow(titleText)
     Title.Parent = Header
 
     local HeaderLine = Instance.new("Frame")
-    HeaderLine.Size = UDim2.new(1,0,0.05,0)
-    HeaderLine.Position = UDim2.new(0,0,1,0)
     HeaderLine.BackgroundColor3 = self.Theme.Accent
     HeaderLine.BorderSizePixel = 0
+    HeaderLine.Size = UDim2.new(1,0,0.05,0)
+    HeaderLine.Position = UDim2.new(0,0,1,0)
     HeaderLine.Parent = Header
 
-    ---------------------------------------------------------------
-    -- MAIN CONTAINER (holds Left + Right columns)
-    ---------------------------------------------------------------
+    -------------------------------------------------------
+    -- MAIN CONTAINER (HOLDS LEFT + RIGHT)
+    -------------------------------------------------------
     local Container = Instance.new("Frame")
     Container.Name = "Container"
     Container.BackgroundTransparency = 1
@@ -63,36 +62,45 @@ function Bankroll:CreateWindow(titleText)
     Container.Position = UDim2.new(0.025,0,0.06,0)
     Container.Parent = Main
 
+    local Row = Instance.new("UIListLayout", Container)
+    Row.FillDirection = Enum.FillDirection.Horizontal
+    Row.Padding = UDim.new(0,6)
+
+    -------------------------------------------------------
+    -- LEFT PANEL
+    -------------------------------------------------------
     local Left = Instance.new("ScrollingFrame")
     Left.Name = "Left"
-    Left.Size = UDim2.new(0.49,0,1,0)
     Left.BackgroundTransparency = 1
-    Left.BorderSizePixel = 0
-    Left.CanvasSize = UDim2.new(0,0,0,0)
+    Left.Size = UDim2.new(0.49,0,1,0)
+    Left.ScrollBarThickness = 0
     Left.AutomaticCanvasSize = Enum.AutomaticSize.Y
     Left.Parent = Container
 
-    local LeftLayout = Instance.new("UIListLayout", Left)
-    LeftLayout.Padding = UDim.new(0,6)
-    LeftLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    local LeftList = Instance.new("UIListLayout")
+    LeftList.Parent = Left
+    LeftList.SortOrder = Enum.SortOrder.LayoutOrder
+    LeftList.Padding = UDim.new(0,4)
 
+    -------------------------------------------------------
+    -- RIGHT PANEL
+    -------------------------------------------------------
     local Right = Instance.new("ScrollingFrame")
     Right.Name = "Right"
-    Right.Size = UDim2.new(0.49,0,1,0)
-    Right.Position = UDim2.new(0.51,0,0,0)
     Right.BackgroundTransparency = 1
-    Right.BorderSizePixel = 0
-    Right.CanvasSize = UDim2.new(0,0,0,0)
+    Right.Size = UDim2.new(0.49,0,1,0)
+    Right.ScrollBarThickness = 0
     Right.AutomaticCanvasSize = Enum.AutomaticSize.Y
     Right.Parent = Container
 
-    local RightLayout = Instance.new("UIListLayout", Right)
-    RightLayout.Padding = UDim.new(0,6)
-    RightLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    local RightList = Instance.new("UIListLayout")
+    RightList.Parent = Right
+    RightList.SortOrder = Enum.SortOrder.LayoutOrder
+    RightList.Padding = UDim.new(0,4)
 
-    ---------------------------------------------------------------
+    -------------------------------------------------------
     -- BOTTOM TABS
-    ---------------------------------------------------------------
+    -------------------------------------------------------
     local TabBar = Instance.new("Frame")
     TabBar.Name = "TabBar"
     TabBar.Size = UDim2.new(1,0,0.10,0)
@@ -102,21 +110,26 @@ function Bankroll:CreateWindow(titleText)
     TabBar.Parent = Main
 
     local TabLine = Instance.new("Frame")
-    TabLine.Size = UDim2.new(1,0,0.0227,0)
-    TabLine.Position = UDim2.new(0,0,-0.0227,0)
     TabLine.BackgroundColor3 = self.Theme.Accent
     TabLine.BorderSizePixel = 0
+    TabLine.Size = UDim2.new(1,0,0.023,0)
+    TabLine.Position = UDim2.new(0,0,-0.023,0)
     TabLine.Parent = TabBar
 
-    local TabLayout = Instance.new("UIListLayout", TabBar)
-    TabLayout.FillDirection = Enum.FillDirection.Horizontal
-    TabLayout.Padding = UDim.new(0,8)
-    TabLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    local TabsLayout = Instance.new("UIListLayout", TabBar)
+    TabsLayout.FillDirection = Enum.FillDirection.Horizontal
+    TabsLayout.Padding = UDim.new(0,8)
+    TabsLayout.HorizontalAlignment = Enum.HorizontalAlignment.Center
 
+    -------------------------------------------------------
+    -- RETURN WINDOW OBJECT
+    -------------------------------------------------------
     local window = {
+        ScreenGui = ScreenGui,
+        Main = Main,
+        Container = Container,
         Left = Left,
         Right = Right,
-        NextSide = "Left",
         TabBar = TabBar,
         Tabs = {},
     }
@@ -124,15 +137,81 @@ function Bankroll:CreateWindow(titleText)
     return setmetatable(window, {__index = Bankroll})
 end
 
+-------------------------------------------------------
+-- ADD LEFT SECTION
+-------------------------------------------------------
+function Bankroll:AddLeftSection(title)
+    local Section = Instance.new("Frame")
+    Section.BackgroundTransparency = 1
+    Section.Size = UDim2.new(1,0,0,30)
+    Section.Parent = self.Left
 
+    local Label = Instance.new("TextLabel")
+    Label.Size = UDim2.new(1,0,1,0)
+    Label.BackgroundTransparency = 1
+    Label.Text = title
+    Label.Font = Enum.Font.SourceSansBold
+    Label.TextScaled = true
+    Label.TextColor3 = self.Theme.Text
+    Label.Parent = Section
 
-----------------------------------------------------------------
---  SECTION (title + container)
-----------------------------------------------------------------
-function Bankroll:AddSection(title)
-    local Parent
-    if self.NextSide == "Left" then
-        Parent = self.Left
+    return Section
+end
+
+-------------------------------------------------------
+-- ADD RIGHT SECTION
+-------------------------------------------------------
+function Bankroll:AddRightSection(title)
+    local Section = Instance.new("Frame")
+    Section.BackgroundTransparency = 1
+    Section.Size = UDim2.new(1,0,0,30)
+    Section.Parent = self.Right
+
+    local Label = Instance.new("TextLabel")
+    Label.Size = UDim2.new(1,0,1,0)
+    Label.BackgroundTransparency = 1
+    Label.Text = title
+    Label.Font = Enum.Font.SourceSansBold
+    Label.TextScaled = true
+    Label.TextColor3 = Bankroll.Theme.Text
+    Label.Parent = Section
+
+    return Section
+end
+
+-------------------------------------------------------
+-- ADD TAB
+-------------------------------------------------------
+function Bankroll:AddTab(name, iconId)
+    local Tab = Instance.new("Frame")
+    Tab.Name = name
+    Tab.Size = UDim2.new(0.20,0,0.85,0)
+    Tab.BackgroundTransparency = 1
+    Tab.Parent = self.TabBar
+
+    local Icon = Instance.new("ImageLabel")
+    Icon.Size = UDim2.new(0.3,0,0.7,0)
+    Icon.Position = UDim2.new(0.06,0,0.15,0)
+    Icon.BackgroundTransparency = 1
+    Icon.Image = iconId or "rbxassetid://3926305904"
+    Icon.ImageColor3 = self.Theme.Text
+    Icon.Parent = Tab
+
+    local Text = Instance.new("TextLabel")
+    Text.Size = UDim2.new(0.6,0,1,0)
+    Text.Position = UDim2.new(0.40,0,0,0)
+    Text.BackgroundTransparency = 1
+    Text.Text = name
+    Text.TextScaled = true
+    Text.TextColor3 = self.Theme.Text
+    Text.Font = Enum.Font.SourceSansBold
+    Text.Parent = Tab
+
+    self.Tabs[name] = Tab
+    return Tab
+end
+
+return Bankroll        Parent = self.Left
         self.NextSide = "Right"
     else
         Parent = self.Right
