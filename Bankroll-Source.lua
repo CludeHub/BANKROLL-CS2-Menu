@@ -1,19 +1,4 @@
-Based on the complete Lua module you provided, here is the usage code demonstrating how to create the window, add a tab, and add sections to that tab.
-The Bankroll:AddSection function requires three arguments: the container (returned by AddTab), the title string, and the position string ("left" or "right").
-local Bankroll = require(game.ReplicatedStorage.BankrollModule) -- Assuming your code is in a ModuleScript named 'BankrollModule' in ReplicatedStorage
 
-local menu = Bankroll:AddWindow("Mafia")
-local tab = Bankroll:AddTab("Home")
-local leftSection = Bankroll:AddSection(tab, "Primary Settings", "left") 
-local rightSection = Bankroll:AddSection(tab, "Utility Functions", "right") 
-
--- You can now add UI elements to the returned section Frames
-local exampleButton = Instance.new("TextButton")
-exampleButton.Size = UDim2.new(1, 0, 0, 30)
-exampleButton.Text = "Example Button"
-exampleButton.Parent = leftSection
-
-Full Module (Without Comments)
 local Bankroll = {}
 local Frame
 local TabScroll
