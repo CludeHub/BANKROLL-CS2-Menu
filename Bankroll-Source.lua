@@ -407,6 +407,14 @@ function Bankroll:AddTab(tabtext)
         -- Show the clicked tab's container
         Container.Visible = true
     end)
+    
+    -- Ensure the first tab created is visible by default
+    -- This relies on the global 'Frame' variable being set, which it is in AddWindow
+    local firstTab = Frame:FindFirstChildOfClass("Frame", true) 
+    if firstTab and firstTab.Name:match("_Container$") and not Frame:FindFirstChildWhichIsA("Frame", true).Visible then
+        Container.Visible = true
+    end
+
 
     -- Return the container for adding sections/content
     return Container
