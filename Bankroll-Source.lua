@@ -1,217 +1,508 @@
--- Bankroll UI Module (tab-aware, preserves original design)
 local Bankroll = {}
-Bankroll.__index = Bankroll
 
-local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
+-- Global variables for the main window elements, accessible by other functions
+local Frame
+local TabScroll
 
--- Helper to create UIGradient
-local function createGradient(parent, color1, color2, rotation)
-    local grad = Instance.new("UIGradient")
-    grad.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, color1), ColorSequenceKeypoint.new(1, color2)})
-    grad.Rotation = rotation or 0
-    grad.Parent = parent
-    return grad
-end
+function Bankroll:AddWindow(TitleText) -- Changed parameter name to avoid conflict with instance name
+    local PlayerGui = game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')
+    local ScreenGui = Instance.new('ScreenGui')
+    ScreenGui.Name = "Bankroll"
+    ScreenGui.Parent = PlayerGui
 
--- Helper to create UIStroke
-local function createUIStroke(parent, color, thickness)
-    local stroke = Instance.new("UIStroke")
-    stroke.Color = color or Color3.fromRGB(53,53,53)
-    stroke.Thickness = thickness or 1
-    stroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
-    stroke.Parent = parent
-    return stroke
-end
+    Frame = Instance.new('Frame') -- Use the outer Frame variable
+    Frame.Name = "Frame"
+    Frame.Position = UDim2.new(0,0,0,0)
+    Frame.Size = UDim2.new(0.5600000023841858,0,0.9390000104904175,0)
+    Frame.AnchorPoint = Vector2.new(0,0)
+    Frame.BackgroundColor3 = Color3.fromRGB(255,255,255)
+    Frame.BackgroundTransparency = 0
+    Frame.BorderSizePixel = 0
+    Frame.ClipsDescendants = false
+    Frame.Visible = true
+    Frame.ZIndex = 1
+    Frame.AutomaticSize = Enum.AutomaticSize.None
+    Frame.LayoutOrder = 0
+    Frame.Active = true
+    Frame.Draggable = true
+    Frame.Parent = ScreenGui
 
--- Helper to create UICorner
-local function createUICorner(parent, radius)
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = radius or UDim.new(0,4)
-    corner.Parent = parent
-    return corner
-end
+    local UIGradient_11 = Instance.new('UIGradient')
+    UIGradient_11.Name = "UIGradient"
+    UIGradient_11.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(15,15,15)),ColorSequenceKeypoint.new(1, Color3.fromRGB(9,9,9))})
+    UIGradient_11.Rotation = 90
+    UIGradient_11.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
+    UIGradient_11.Parent = Frame
 
--- Create a window
-function Bankroll:AddWindow(title)
-    local self = setmetatable({}, Bankroll)
-    
-    -- ScreenGui
-    self.ScreenGui = Instance.new("ScreenGui")
-    self.ScreenGui.Name = "Bankroll"
-    self.ScreenGui.Enabled = true
-    self.ScreenGui.DisplayOrder = 0
-    self.ScreenGui.IgnoreGuiInset = false
-    self.ScreenGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
+    local UIAspectRatioConstraint_6 = Instance.new('UIAspectRatioConstraint')
+    UIAspectRatioConstraint_6.Name = "UIAspectRatioConstraint"
+    UIAspectRatioConstraint_6.AspectRatio = 1.159999966621399
+    UIAspectRatioConstraint_6.AspectType = Enum.AspectType.FitWithinMaxSize
+    UIAspectRatioConstraint_6.Parent = Frame
+    local UIScale = Instance.new('UIScale') -- Corrected declaration: UIScale was missing 'local'
+    UIScale.Name = "UIScale"
+    UIScale.Scale = 0.8999999761581421
+    UIScale.Parent = Frame
 
-    -- Main Frame
-    self.Frame = Instance.new("Frame")
-    self.Frame.Name = "Frame"
-    self.Frame.Position = UDim2.new(0,0,0,0)
-    self.Frame.Size = UDim2.new(0.56,0,0.939,0)
-    self.Frame.BackgroundColor3 = Color3.fromRGB(255,255,255)
-    self.Frame.BackgroundTransparency = 0
-    self.Frame.BorderSizePixel = 0
-    self.Frame.ClipsDescendants = false
-    self.Frame.Visible = true
-    self.Frame.Active = true
-    self.Frame.Draggable = true
-    self.Frame.ZIndex = 1
-    self.Frame.LayoutOrder = 0
-    self.Frame.AutomaticSize = Enum.AutomaticSize.None
-    self.Frame.Parent = self.ScreenGui
-
-    createGradient(self.Frame, Color3.fromRGB(15,15,15), Color3.fromRGB(9,9,9), 90)
-    createUIStroke(self.Frame, Color3.fromRGB(44,44,44), 1)
-    self.UIScale = Instance.new("UIScale")
-    self.UIScale.Scale = 0.9
-    self.UIScale.Parent = self.Frame
-
-    -- Header
-    local Header = Instance.new("Frame")
+    local Header = Instance.new('Frame')
     Header.Name = "Header"
     Header.Position = UDim2.new(0,0,0,0)
-    Header.Size = UDim2.new(1,0,0.05,0)
+    Header.Size = UDim2.new(1,0,0.05000000074505806,0)
+    Header.AnchorPoint = Vector2.new(0,0)
     Header.BackgroundColor3 = Color3.fromRGB(255,255,255)
     Header.BackgroundTransparency = 0
     Header.BorderSizePixel = 0
     Header.ClipsDescendants = false
+    Header.Visible = true
     Header.ZIndex = 1
-    Header.Parent = self.Frame
-    createGradient(Header, Color3.fromRGB(18,18,18), Color3.fromRGB(30,30,30), 90)
+    Header.AutomaticSize = Enum.AutomaticSize.None
+    Header.LayoutOrder = 0
+    Header.Parent = Frame
 
-    local TitleLabel = Instance.new("TextLabel")
-    TitleLabel.Name = "Title"
-    TitleLabel.Position = UDim2.new(0.3,0,0,0)
-    TitleLabel.Size = UDim2.new(0.3,0,0.8,0)
-    TitleLabel.BackgroundTransparency = 1
-    TitleLabel.Text = title or "Bankroll Mafia"
-    TitleLabel.TextColor3 = Color3.fromRGB(255,191,255)
-    TitleLabel.TextScaled = true
-    TitleLabel.Font = Enum.Font.SourceSansSemibold
-    TitleLabel.TextXAlignment = Enum.TextXAlignment.Center
-    TitleLabel.TextYAlignment = Enum.TextYAlignment.Center
-    TitleLabel.Parent = Header
+    local HeaderLine = Instance.new('Frame')
+    HeaderLine.Name = "HeaderLine"
+    HeaderLine.Position = UDim2.new(0,0,1,0)
+    HeaderLine.Size = UDim2.new(1,0,0.06800000369548798,0)
+    HeaderLine.AnchorPoint = Vector2.new(0,0)
+    HeaderLine.BackgroundColor3 = Color3.fromRGB(255,255,255)
+    HeaderLine.BackgroundTransparency = 0
+    HeaderLine.BorderSizePixel = 0
+    HeaderLine.ClipsDescendants = false
+    HeaderLine.Visible = true
+    HeaderLine.ZIndex = 3
+    HeaderLine.AutomaticSize = Enum.AutomaticSize.None
+    HeaderLine.LayoutOrder = 0
+    HeaderLine.Parent = Header
 
-    -- Bottom Frame (Tabs)
-    self.Bottom = Instance.new("Frame")
-    self.Bottom.Name = "Bottom"
-    self.Bottom.Position = UDim2.new(0,0,0.909,0)
-    self.Bottom.Size = UDim2.new(1,0,0.091,0)
-    self.Bottom.BackgroundTransparency = 0
-    self.Bottom.BackgroundColor3 = Color3.fromRGB(255,255,255)
-    self.Bottom.Parent = self.Frame
+    local UIGradient_12 = Instance.new('UIGradient')
+    UIGradient_12.Name = "UIGradient"
+    UIGradient_12.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255,191,255)),ColorSequenceKeypoint.new(1, Color3.fromRGB(65,48,65))})
+    UIGradient_12.Rotation = 0
+    UIGradient_12.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
+    UIGradient_12.Parent = HeaderLine
 
-    -- Tab scroll
-    self.TabScroll = Instance.new("ScrollingFrame")
-    self.TabScroll.Name = "TabScroll"
-    self.TabScroll.Size = UDim2.new(1,0,1,0)
-    self.TabScroll.Position = UDim2.new(0,0,0,0)
-    self.TabScroll.BackgroundTransparency = 1
-    self.TabScroll.ScrollBarThickness = 0
-    self.TabScroll.CanvasSize = UDim2.new(0,0,0,0)
-    self.TabScroll.Parent = self.Bottom
+    local HeaderLin2 = Instance.new('Frame')
+    HeaderLin2.Name = "HeaderLin2"
+    HeaderLin2.Position = UDim2.new(0,0,1,0)
+    HeaderLin2.Size = UDim2.new(0.5,0,0.06800000369548798,0)
+    HeaderLin2.AnchorPoint = Vector2.new(0,0)
+    HeaderLin2.BackgroundColor3 = Color3.fromRGB(255,255,255)
+    HeaderLin2.BackgroundTransparency = 0
+    HeaderLin2.BorderSizePixel = 0
+    HeaderLin2.ClipsDescendants = false
+    HeaderLin2.Visible = true
+    HeaderLin2.ZIndex = 4
+    HeaderLin2.AutomaticSize = Enum.AutomaticSize.None
+    HeaderLin2.LayoutOrder = 0
+    HeaderLin2.Parent = Header
 
-    -- UIListLayout for tabs
-    self.TabList = Instance.new("UIListLayout")
-    self.TabList.FillDirection = Enum.FillDirection.Horizontal
-    self.TabList.HorizontalAlignment = Enum.HorizontalAlignment.Left
-    self.TabList.VerticalAlignment = Enum.VerticalAlignment.Top
-    self.TabList.Padding = UDim.new(0,4)
-    self.TabList.SortOrder = Enum.SortOrder.LayoutOrder
-    self.TabList.Parent = self.TabScroll
+    local UIGradient_13 = Instance.new('UIGradient')
+    UIGradient_13.Name = "UIGradient"
+    UIGradient_13.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(63,47,63)),ColorSequenceKeypoint.new(1, Color3.fromRGB(181,136,181))})
+    UIGradient_13.Rotation = 0
+    UIGradient_13.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
+    UIGradient_13.Parent = HeaderLin2
 
-    self.TabList:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(function()
-        self.TabScroll.CanvasSize = UDim2.new(0, self.TabList.AbsoluteContentSize.X, 0, 0)
-    end)
+    local Title = Instance.new('TextLabel')
+    Title.Name = "Title"
+    Title.Position = UDim2.new(0.30000001192092896,0,0,0)
+    Title.Size = UDim2.new(0.30000001192092896,0,0.800000011920929,0)
+    Title.AnchorPoint = Vector2.new(0,0)
+    Title.BackgroundColor3 = Color3.fromRGB(162,162,162)
+    Title.BackgroundTransparency = 1
+    Title.BorderSizePixel = 1
+    Title.Text = TitleText or "Bankroll Mafia" -- Use TitleText parameter
+    Title.TextColor3 = Color3.fromRGB(255,191,255)
+    Title.TextScaled = true
+    Title.TextSize = 8
+    Title.Font = Enum.Font.SourceSansSemibold
+    Title.TextTransparency = 0
+    Title.Visible = true
+    Title.ZIndex = 1
+    Title.AutomaticSize = Enum.AutomaticSize.None
+    Title.TextXAlignment = Enum.TextXAlignment.Center
+    Title.TextYAlignment = Enum.TextYAlignment.Center
+    Title.LayoutOrder = 0
+    Title.Parent = Header
 
-    self.Tabs = {}
-    return self
+    local UIGradient_14 = Instance.new('UIGradient')
+    UIGradient_14.Name = "UIGradient"
+    UIGradient_14.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(18,18,18)),ColorSequenceKeypoint.new(1, Color3.fromRGB(30,30,30))})
+    UIGradient_14.Rotation = 90
+    UIGradient_14.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
+    UIGradient_14.Parent = Header
+
+    local UIStroke_7 = Instance.new('UIStroke')
+    UIStroke_7.Name = "UIStroke"
+    UIStroke_7.Color = Color3.fromRGB(44,44,44)
+    UIStroke_7.Transparency = 0
+    UIStroke_7.Thickness = 1
+    UIStroke_7.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
+    UIStroke_7.Parent = Frame
+
+    local Bottom = Instance.new('Frame')
+    Bottom.Name = "Bottom"
+    Bottom.Position = UDim2.new(0,0,0.9089999794960022,0)
+    Bottom.Size = UDim2.new(1,0,0.09000000357627869,0)
+    Bottom.AnchorPoint = Vector2.new(0,0)
+    Bottom.BackgroundColor3 = Color3.fromRGB(255,255,255)
+    Bottom.BackgroundTransparency = 0
+    Bottom.BorderSizePixel = 0
+    Bottom.ClipsDescendants = false
+    Bottom.Visible = true
+    Bottom.ZIndex = 1
+    Bottom.AutomaticSize = Enum.AutomaticSize.None
+    Bottom.LayoutOrder = 0
+    Bottom.Parent = Frame
+
+    TabScroll = Instance.new('ScrollingFrame') -- Use the outer TabScroll variable
+    TabScroll.Name = "TabScroll"
+    TabScroll.Position = UDim2.new(0,0,0.10000000149011612,0)
+    TabScroll.Size = UDim2.new(1,0,0.8989999890327454,0)
+    TabScroll.AnchorPoint = Vector2.new(0,0)
+    TabScroll.BackgroundColor3 = Color3.fromRGB(162,162,162)
+    TabScroll.BackgroundTransparency = 1
+    TabScroll.BorderSizePixel = 0
+    TabScroll.CanvasSize = UDim2.new(2,0,0,0)
+    TabScroll.ScrollBarThickness = 0
+    TabScroll.Visible = true
+    TabScroll.ZIndex = 1
+    TabScroll.LayoutOrder = 0
+    TabScroll.Parent = Bottom
+    TabScroll.AutomaticSize = Enum.AutomaticSize.X
+
+    local UIListLayout = Instance.new('UIListLayout')
+    UIListLayout.Name = "UIListLayout"
+    UIListLayout.FillDirection = Enum.FillDirection.Horizontal
+    UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
+    UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
+    UIListLayout.Padding = UDim.new(0,4)
+    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout.Parent = TabScroll
+
+    local BottomLine = Instance.new('Frame')
+    BottomLine.Name = "BottomLine"
+    BottomLine.Position = UDim2.new(0,0,0,0)
+    BottomLine.Size = UDim2.new(1,0,0.029999999329447746,0)
+    BottomLine.AnchorPoint = Vector2.new(0,0)
+    BottomLine.BackgroundColor3 = Color3.fromRGB(255,255,255)
+    BottomLine.BackgroundTransparency = 0
+    BottomLine.BorderSizePixel = 0
+    BottomLine.ClipsDescendants = false
+    BottomLine.Visible = true
+    BottomLine.ZIndex = 3
+    BottomLine.AutomaticSize = Enum.AutomaticSize.None
+    BottomLine.LayoutOrder = 0
+    BottomLine.Parent = Bottom
+
+    local UIGradient_2 = Instance.new('UIGradient')
+    UIGradient_2.Name = "UIGradient"
+    UIGradient_2.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255,191,255)),ColorSequenceKeypoint.new(1, Color3.fromRGB(65,48,65))})
+    UIGradient_2.Rotation = 0
+    UIGradient_2.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
+    UIGradient_2.Parent = BottomLine
+
+    local BottomLin2 = Instance.new('Frame')
+    BottomLin2.Name = "BottomLin2"
+    BottomLin2.Position = UDim2.new(0,0,0,0)
+    BottomLin2.Size = UDim2.new(0.5,0,0.019999999552965164,0)
+    BottomLin2.AnchorPoint = Vector2.new(0,0)
+    BottomLin2.BackgroundColor3 = Color3.fromRGB(255,255,255)
+    BottomLin2.BackgroundTransparency = 0
+    BottomLin2.BorderSizePixel = 0
+    BottomLin2.ClipsDescendants = false
+    BottomLin2.Visible = true
+    BottomLin2.ZIndex = 4
+    BottomLin2.AutomaticSize = Enum.AutomaticSize.None
+    BottomLin2.LayoutOrder = 0
+    BottomLin2.Parent = Bottom
+
+    local UIGradient_3 = Instance.new('UIGradient')
+    UIGradient_3.Name = "UIGradient"
+    UIGradient_3.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(63,47,63)),ColorSequenceKeypoint.new(1, Color3.fromRGB(181,136,181))})
+    UIGradient_3.Rotation = 0
+    UIGradient_3.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
+    UIGradient_3.Parent = BottomLin2
+
+    local UIGradient_4 = Instance.new('UIGradient') -- Corrected declaration: UIGradient_4 was missing 'local'
+    UIGradient_4.Name = "UIGradient"
+    UIGradient_4.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(18,18,18)),ColorSequenceKeypoint.new(1, Color3.fromRGB(30,30,30))})
+    UIGradient_4.Rotation = 90
+    UIGradient_4.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
+    UIGradient_4.Parent = Bottom
+
+    return Frame
 end
 
--- Add tab
-function Bankroll:AddTab(tabName)
-    local tab = {}
-    
-    tab.Frame = Instance.new("Frame")
-    tab.Frame.Name = "TabButton"
-    tab.Frame.Size = UDim2.new(0.17,0,0.8,0)
-    tab.Frame.BackgroundColor3 = Color3.fromRGB(28,28,28)
-    tab.Frame.Parent = self.TabScroll
-    createGradient(tab.Frame, Color3.fromRGB(16,16,16), Color3.fromRGB(28,28,28), -90)
-    createUIStroke(tab.Frame, Color3.fromRGB(53,53,53), 1)
-    createUICorner(tab.Frame)
-
-    -- TextLabel
-    tab.TextLabel = Instance.new("TextLabel")
-    tab.TextLabel.Size = UDim2.new(0.92,0,0.787,0)
-    tab.TextLabel.BackgroundTransparency = 1
-    tab.TextLabel.Text = tabName or "Tab"
-    tab.TextLabel.TextColor3 = Color3.fromRGB(127,127,127)
-    tab.TextLabel.TextScaled = true
-    tab.TextLabel.Font = Enum.Font.SourceSansSemibold
-    tab.TextLabel.TextXAlignment = Enum.TextXAlignment.Center
-    tab.TextLabel.TextYAlignment = Enum.TextYAlignment.Center
-    tab.TextLabel.Parent = tab.Frame
-
-    -- Invisible button
-    tab.Button = Instance.new("TextButton")
-    tab.Button.Size = UDim2.new(1,0,1,0)
-    tab.Button.BackgroundTransparency = 1
-    tab.Button.Text = ""
-    tab.Button.Parent = tab.Frame
-
-    -- Sections container inside window
-    tab.SectionsContainer = Instance.new("Frame")
-    tab.SectionsContainer.Name = tabName.."_Sections"
-    tab.SectionsContainer.Size = UDim2.new(1,0,0.82,0)
-    tab.SectionsContainer.Position = UDim2.new(0,0,0,0)
-    tab.SectionsContainer.BackgroundTransparency = 1
-    tab.SectionsContainer.Parent = self.Frame
-    tab.SectionsContainer.Visible = false
-
-    -- Show this tab when clicked
-    tab.Button.MouseButton1Click:Connect(function()
-        for _, t in pairs(self.Tabs) do
-            t.SectionsContainer.Visible = false
-        end
-        tab.SectionsContainer.Visible = true
-    end)
-
-    -- Method to add section
-    function tab:AddSection(sectionName, position)
-        position = position or "left"
-        local section = Instance.new("Frame")
-        section.Name = sectionName
-        section.Position = UDim2.new(0,0,0,0)
-        section.Size = UDim2.new(0.49,0,1,0)
-        section.BackgroundColor3 = Color3.fromRGB(25,25,25)
-        section.BackgroundTransparency = 0
-        section.BorderSizePixel = 1
-        section.ClipsDescendants = false
-        section.Visible = true
-        section.AutomaticSize = Enum.AutomaticSize.Y
-        section.Parent = tab.SectionsContainer
-        createUICorner(section)
-        createUIStroke(section, Color3.fromRGB(44,44,44), 1)
-        createGradient(section, Color3.fromRGB(25,25,25), Color3.fromRGB(12,12,12), 90)
-
-        local SectionTitle = Instance.new("TextLabel")
-        SectionTitle.Size = UDim2.new(1,0,0.99,0)
-        SectionTitle.BackgroundTransparency = 1
-        SectionTitle.Text = sectionName or "Section"
-        SectionTitle.TextColor3 = Color3.fromRGB(123,123,123)
-        SectionTitle.TextScaled = true
-        SectionTitle.Font = Enum.Font.SourceSansSemibold
-        SectionTitle.TextXAlignment = Enum.TextXAlignment.Center
-        SectionTitle.TextYAlignment = Enum.TextYAlignment.Center
-        SectionTitle.Parent = section
-
-        return section
+function Bankroll:AddTab(tabtext)
+    -- Check if AddWindow has been called and Frame exists
+    if not Frame or not TabScroll then
+        warn("Bankroll:AddWindow must be called first!")
+        return
     end
 
-    table.insert(self.Tabs, tab)
-    return tab
+    local Container = Instance.new('Frame')
+    Container.Name = tabtext .. "_Container"
+    -- These position and size values are typical for a tab page inside a main frame
+    Container.Position = UDim2.new(0.014,0,0.067,0)
+    Container.Size = UDim2.new(0.97,0,0.824,0)
+    Container.AnchorPoint = Vector2.new(0,0)
+    Container.BackgroundColor3 = Color3.fromRGB(162,162,162)
+    Container.BackgroundTransparency = 1
+    Container.BorderSizePixel = 1
+    Container.ClipsDescendants = false
+    Container.Visible = false
+    Container.ZIndex = 1
+    Container.AutomaticSize = Enum.AutomaticSize.None
+    Container.LayoutOrder = 0
+    Container.Parent = Frame -- Parent to the main Frame
+
+    -- Create the Left and Right ScrollingFrames inside the Container for sections
+    local UIListLayout_Container = Instance.new('UIListLayout')
+    UIListLayout_Container.Name = "UIListLayout"
+    UIListLayout_Container.FillDirection = Enum.FillDirection.Horizontal
+    UIListLayout_Container.HorizontalAlignment = Enum.HorizontalAlignment.Left
+    UIListLayout_Container.VerticalAlignment = Enum.VerticalAlignment.Top
+    UIListLayout_Container.Padding = UDim.new(0,8)
+    UIListLayout_Container.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout_Container.Parent = Container
+
+    local Right = Instance.new('ScrollingFrame')
+    Right.Name = "Right"
+    Right.Position = UDim2.new(0,0,0,0)
+    Right.Size = UDim2.new(0.48899999260902405,0,1,0)
+    Right.AnchorPoint = Vector2.new(0,0)
+    Right.BackgroundColor3 = Color3.fromRGB(162,162,162)
+    Right.BackgroundTransparency = 1
+    Right.BorderSizePixel = 0
+    Right.CanvasSize = UDim2.new(0,0,2,0)
+    Right.ScrollBarThickness = 0
+    Right.Visible = true
+    Right.ZIndex = 1
+    Right.LayoutOrder = 2
+    Right.Parent = Container
+
+    local UIListLayout_3 = Instance.new('UIListLayout')
+    UIListLayout_3.Name = "UIListLayout"
+    UIListLayout_3.FillDirection = Enum.FillDirection.Vertical
+    UIListLayout_3.HorizontalAlignment = Enum.HorizontalAlignment.Left
+    UIListLayout_3.VerticalAlignment = Enum.VerticalAlignment.Top
+    UIListLayout_3.Padding = UDim.new(0,3)
+    UIListLayout_3.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout_3.Parent = Right
+
+    local Left = Instance.new('ScrollingFrame')
+    Left.Name = "Left"
+    Left.Position = UDim2.new(0,0,0,0)
+    Left.Size = UDim2.new(0.48899999260902405,0,1,0)
+    Left.AnchorPoint = Vector2.new(0,0)
+    Left.BackgroundColor3 = Color3.fromRGB(162,162,162)
+    Left.BackgroundTransparency = 1
+    Left.BorderSizePixel = 0
+    Left.CanvasSize = UDim2.new(0,0,2,0)
+    Left.ScrollBarThickness = 0
+    Left.Visible = true
+    Left.ZIndex = 1
+    Left.LayoutOrder = 1
+    Left.Parent = Container
+
+    -- The UIListLayout_4 was likely intended for the sections *inside* the Left scrolling frame,
+    -- but its definition in the original code made it a child of the Left frame *before* it was created.
+    -- I've kept it as it was in the original code, but it is typically better to put list layouts inside scrolling frames
+    -- that hold the items. However, based on the original code's structure:
+    local UIListLayout_4 = Instance.new('UIListLayout')
+    UIListLayout_4.Name = "UIListLayout"
+    UIListLayout_4.FillDirection = Enum.FillDirection.Vertical -- Changed to Vertical for a scrolling frame of sections
+    UIListLayout_4.HorizontalAlignment = Enum.HorizontalAlignment.Left
+    UIListLayout_4.VerticalAlignment = Enum.VerticalAlignment.Top
+    UIListLayout_4.Padding = UDim.new(0,10)
+    UIListLayout_4.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout_4.Parent = Left -- Keeping original parenting
+
+
+    -- Tab Button creation (unchanged)
+    local TabButton = Instance.new('Frame')
+    TabButton.Name = "TabButton"
+    TabButton.Position = UDim2.new(0,0,0,0)
+    TabButton.Size = UDim2.new(0.17000000178813934,0,0.800000011920929,0)
+    TabButton.AnchorPoint = Vector2.new(0,0)
+    TabButton.BackgroundColor3 = Color3.fromRGB(255,255,255)
+    TabButton.BackgroundTransparency = 0
+    TabButton.BorderSizePixel = 0
+    TabButton.ClipsDescendants = false
+    TabButton.Visible = true
+    TabButton.ZIndex = 1
+    TabButton.AutomaticSize = Enum.AutomaticSize.None
+    TabButton.LayoutOrder = 0
+    TabButton.Parent = TabScroll
+
+    local Text = Instance.new('TextLabel')
+    Text.Name = "Text"
+    Text.Position = UDim2.new(0,0,0,0)
+    Text.Size = UDim2.new(0.9179999828338623,0,0.7870000004768372,0)
+    Text.AnchorPoint = Vector2.new(0,0)
+    Text.BackgroundColor3 = Color3.fromRGB(162,162,162)
+    Text.BackgroundTransparency = 1
+    Text.BorderSizePixel = 1
+    Text.Text = tabtext or "Tab"
+    Text.TextColor3 = Color3.fromRGB(127,127,127)
+    Text.TextScaled = true
+    Text.TextSize = 8
+    Text.Font = Enum.Font.SourceSansSemibold
+    Text.TextTransparency = 0
+    Text.Visible = true
+    Text.ZIndex = 1
+    Text.AutomaticSize = Enum.AutomaticSize.None
+    Text.TextXAlignment = Enum.TextXAlignment.Center
+    Text.TextYAlignment = Enum.TextYAlignment.Center
+    Text.LayoutOrder = 0
+    Text.Parent = TabButton
+
+    local SwitchClick = Instance.new('TextButton')
+    SwitchClick.Name = "SwitchClick"
+    SwitchClick.Position = UDim2.new(0,0,0,0)
+    SwitchClick.Size = UDim2.new(1,0,1,0)
+    SwitchClick.AnchorPoint = Vector2.new(0,0)
+    SwitchClick.BackgroundColor3 = Color3.fromRGB(255,255,255)
+    SwitchClick.BackgroundTransparency = 1
+    SwitchClick.BorderSizePixel = 1
+    SwitchClick.Text = ""
+    SwitchClick.TextColor3 = Color3.fromRGB(27,42,53)
+    SwitchClick.TextScaled = false
+    SwitchClick.TextSize = 8
+    SwitchClick.Font = Enum.Font.Legacy
+    SwitchClick.TextTransparency = 0
+    SwitchClick.Visible = true
+    SwitchClick.ZIndex = 1
+    SwitchClick.AutomaticSize = Enum.AutomaticSize.None
+    SwitchClick.TextXAlignment = Enum.TextXAlignment.Center
+    SwitchClick.TextYAlignment = Enum.TextYAlignment.Center
+    SwitchClick.LayoutOrder = 0
+    SwitchClick.Parent = TabButton
+
+    local UIGradient = Instance.new('UIGradient')
+    UIGradient.Name = "UIGradient"
+    UIGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(16,16,16)),ColorSequenceKeypoint.new(1, Color3.fromRGB(28,28,28))})
+    UIGradient.Rotation = -90
+    UIGradient.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
+    UIGradient.Parent = TabButton
+
+    local UIStroke = Instance.new('UIStroke')
+    UIStroke.Name = "UIStroke"
+    UIStroke.Color = Color3.fromRGB(53,53,53)
+    UIStroke.Transparency = 0
+    UIStroke.Thickness = 1
+    UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
+    UIStroke.Parent = TabButton
+
+    -- Tab switching logic
+    SwitchClick.MouseButton1Click:Connect(function()
+        -- Iterate over all children of the main Frame (which includes the header and bottom frames)
+        for _, child in pairs(Frame:GetChildren()) do
+            -- Find only the tab containers (frames ending in "_Container") and hide them
+            if child:IsA("Frame") and child.Name:match("_Container$") then
+                child.Visible = false
+            end
+        end
+        -- Show the clicked tab's container
+        Container.Visible = true
+    end)
+
+    -- Return the container for adding sections/content
+    return Container
+end
+
+
+function Bankroll:AddSection(tabContainer, title, position)
+    -- Check for required arguments
+    if not tabContainer or not tabContainer:IsA("Frame") then
+        warn("Bankroll:AddSection requires a valid tabContainer (Frame).")
+        return
+    end
+
+    local ParentScrollingFrame
+    -- Determine the correct parent ScrollingFrame (Left or Right) inside the tab container
+    if position and position:lower() == "right" then
+        ParentScrollingFrame = tabContainer:FindFirstChild("Right")
+    elseif position and position:lower() == "left" then
+        ParentScrollingFrame = tabContainer:FindFirstChild("Left")
+    else
+        warn("Bankroll:AddSection requires 'left' or 'right' for position.")
+        return
+    end
+
+    if not ParentScrollingFrame then
+        warn("Could not find " .. (position or "specified") .. " scrolling frame in container.")
+        return
+    end
+
+    local section = Instance.new('Frame')
+    section.Name = "section"
+    section.Position = UDim2.new(0,0,0,0)
+    section.Size = UDim2.new(0.9800000190734863,0,0,0)
+    section.AnchorPoint = Vector2.new(0,0)
+    section.BackgroundColor3 = Color3.fromRGB(255,255,255)
+    section.BackgroundTransparency = 0
+    section.BorderSizePixel = 1
+    section.ClipsDescendants = false
+    section.Visible = true
+    section.ZIndex = 1
+    section.AutomaticSize = Enum.AutomaticSize.Y
+    section.LayoutOrder = 0
+    section.Parent = ParentScrollingFrame -- Corrected parent
+
+    local UICorner_2 = Instance.new('UICorner')
+    UICorner_2.Name = "UICorner"
+    UICorner_2.CornerRadius = UDim.new(0,4)
+    UICorner_2.Parent = section
+
+    local SectionTitle = Instance.new('TextLabel')
+    SectionTitle.Name = "SectionTitle"
+    SectionTitle.Position = UDim2.new(0,0,0,0)
+    SectionTitle.Size = UDim2.new(1,0,0.9909999966621399,0)
+    SectionTitle.AnchorPoint = Vector2.new(0,0)
+    SectionTitle.BackgroundColor3 = Color3.fromRGB(162,162,162)
+    SectionTitle.BackgroundTransparency = 1
+    SectionTitle.BorderSizePixel = 1
+    SectionTitle.Text = title or "Section" -- Define Text here
+    SectionTitle.TextColor3 = Color3.fromRGB(123,123,123)
+    SectionTitle.TextScaled = true
+    SectionTitle.TextSize = 8
+    SectionTitle.Font = Enum.Font.SourceSansSemibold
+    SectionTitle.TextTransparency = 0
+    SectionTitle.Visible = true
+    SectionTitle.ZIndex = 1
+    SectionTitle.AutomaticSize = Enum.AutomaticSize.None
+    SectionTitle.TextXAlignment = Enum.TextXAlignment.Center
+    SectionTitle.TextYAlignment = Enum.TextYAlignment.Center
+    SectionTitle.LayoutOrder = 1
+    SectionTitle.Parent = section
+
+    local UIAspectRatioConstraint_2 = Instance.new('UIAspectRatioConstraint')
+    UIAspectRatioConstraint_2.Name = "UIAspectRatioConstraint"
+    UIAspectRatioConstraint_2.AspectRatio = 14
+    UIAspectRatioConstraint_2.AspectType = Enum.AspectType.FitWithinMaxSize
+    UIAspectRatioConstraint_2.Parent = SectionTitle
+
+    local UIListLayout_5 = Instance.new('UIListLayout')
+    UIListLayout_5.Name = "UIListLayout"
+    UIListLayout_5.FillDirection = Enum.FillDirection.Vertical
+    UIListLayout_5.HorizontalAlignment = Enum.HorizontalAlignment.Left
+    UIListLayout_5.VerticalAlignment = Enum.VerticalAlignment.Top
+    UIListLayout_5.Padding = UDim.new(0,6)
+    UIListLayout_5.SortOrder = Enum.SortOrder.LayoutOrder
+    UIListLayout_5.Parent = section
+
+    local UIGradient_6 = Instance.new('UIGradient')
+    UIGradient_6.Name = "UIGradient"
+    UIGradient_6.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(25,25,25)),ColorSequenceKeypoint.new(1, Color3.fromRGB(12,12,12))})
+    UIGradient_6.Rotation = 90
+    UIGradient_6.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
+    UIGradient_6.Parent = section
+
+    -- The positioning logic was moved to the beginning to set the ParentScrollingFrame correctly
+    
+    return section
 end
 
 return Bankroll
