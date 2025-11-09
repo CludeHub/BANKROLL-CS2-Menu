@@ -48,13 +48,16 @@ local function makeToggle(parent, text, startVal)
 end
 
 local function makeDropdown(parent, items, widthScale)
-	local holder = new("Frame", {
+	local holder = new("TextButton", {
 		Parent = parent,
 		Size = UDim2.new(widthScale or 1, 0, 0, 30),
 		BackgroundColor3 = Color3.fromRGB(25,25,25),
+		Text = "",
+		AutoButtonColor = false,
 	})
 	new("UICorner", {Parent = holder, CornerRadius = UDim.new(0,4)})
 	new("UIStroke", {Parent = holder, Color = Color3.fromRGB(40,40,40), Thickness = 1})
+	
 	local label = new("TextLabel", {
 		Parent = holder,
 		Text = items[1] or "",
@@ -76,6 +79,7 @@ local function makeDropdown(parent, items, widthScale)
 		Font = Enum.Font.SourceSans,
 		TextSize = 16,
 	})
+	
 	local list = new("Frame", {
 		Parent = holder,
 		Position = UDim2.new(0,0,1,6),
@@ -86,6 +90,7 @@ local function makeDropdown(parent, items, widthScale)
 	})
 	new("UIStroke", {Parent = list, Color = Color3.fromRGB(40,40,40), Thickness = 1})
 	local layout = new("UIListLayout", {Parent = list, SortOrder = Enum.SortOrder.LayoutOrder, Padding = UDim.new(0,2)})
+
 	for i,item in ipairs(items) do
 		local it = new("TextButton", {
 			Parent = list,
@@ -103,21 +108,19 @@ local function makeDropdown(parent, items, widthScale)
 			list:TweenSize(UDim2.new(1,0,0,0),"Out","Quad",0.12,true)
 		end)
 	end
-	arrow:GetPropertyChangedSignal("Text"):Connect(function() end)
-	holder.MouseButton1Click = holder.MouseButton1Click or holder.InputBegan:Connect(function(input)
-		if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-			list.Visible = not list.Visible
-			if list.Visible then
-				local total = #items * 32
-				list:TweenSize(UDim2.new(1,0,0,total),"Out","Quad",0.12,true)
-			else
-				list:TweenSize(UDim2.new(1,0,0,0),"Out","Quad",0.12,true)
-			end
+
+	holder.MouseButton1Click:Connect(function()
+		list.Visible = not list.Visible
+		if list.Visible then
+			local total = #items * 32
+			list:TweenSize(UDim2.new(1,0,0,total),"Out","Quad",0.12,true)
+		else
+			list:TweenSize(UDim2.new(1,0,0,0),"Out","Quad",0.12,true)
 		end
 	end)
+
 	return holder
 end
-
 local function makeTabButton(parent, text)
 	local btn = new("TextButton", {
 		Parent = parent,
