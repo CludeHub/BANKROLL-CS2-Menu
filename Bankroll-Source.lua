@@ -3,14 +3,14 @@ local Bankroll = {}
 
 function Bankroll:AddWindow(Title)
 local PlayerGui = game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')
-Bankroll = Instance.new('ScreenGui')
+local Bankroll = Instance.new('ScreenGui')
 Bankroll.Name = "Bankroll"
 Bankroll.Enabled = true
 Bankroll.DisplayOrder = 0
 Bankroll.IgnoreGuiInset = false
 Bankroll.Parent = PlayerGui
 
-Frame = Instance.new('Frame')
+local Frame = Instance.new('Frame')
 Frame.Name = "Frame"
 Frame.Position = UDim2.new(0,0,0,0)
 Frame.Size = UDim2.new(0.5600000023841858,0,0.9390000104904175,0)
@@ -23,16 +23,18 @@ Frame.Visible = true
 Frame.ZIndex = 1
 Frame.AutomaticSize = Enum.AutomaticSize.None
 Frame.LayoutOrder = 0
+Frame.Active = true
+Frame.Draggable = true
 Frame.Parent = Bankroll
 
-UIGradient_11 = Instance.new('UIGradient')
+local UIGradient_11 = Instance.new('UIGradient')
 UIGradient_11.Name = "UIGradient"
 UIGradient_11.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(15,15,15)),ColorSequenceKeypoint.new(1, Color3.fromRGB(9,9,9))})
 UIGradient_11.Rotation = 90
 UIGradient_11.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
 UIGradient_11.Parent = Frame
 
-UIAspectRatioConstraint_6 = Instance.new('UIAspectRatioConstraint')
+local UIAspectRatioConstraint_6 = Instance.new('UIAspectRatioConstraint')
 UIAspectRatioConstraint_6.Name = "UIAspectRatioConstraint"
 UIAspectRatioConstraint_6.AspectRatio = 1.159999966621399
 UIAspectRatioConstraint_6.AspectType = Enum.AspectType.FitWithinMaxSize
@@ -42,7 +44,7 @@ UIScale.Name = "UIScale"
 UIScale.Scale = 0.8999999761581421
 UIScale.Parent = Frame
 
-Header = Instance.new('Frame')
+local Header = Instance.new('Frame')
 Header.Name = "Header"
 Header.Position = UDim2.new(0,0,0,0)
 Header.Size = UDim2.new(1,0,0.05000000074505806,0)
@@ -57,7 +59,7 @@ Header.AutomaticSize = Enum.AutomaticSize.None
 Header.LayoutOrder = 0
 Header.Parent = Frame
 
-HeaderLine = Instance.new('Frame')
+local HeaderLine = Instance.new('Frame')
 HeaderLine.Name = "HeaderLine"
 HeaderLine.Position = UDim2.new(0,0,1,0)
 HeaderLine.Size = UDim2.new(1,0,0.06800000369548798,0)
@@ -72,14 +74,14 @@ HeaderLine.AutomaticSize = Enum.AutomaticSize.None
 HeaderLine.LayoutOrder = 0
 HeaderLine.Parent = Header
 
-UIGradient_12 = Instance.new('UIGradient')
+local UIGradient_12 = Instance.new('UIGradient')
 UIGradient_12.Name = "UIGradient"
 UIGradient_12.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255,191,255)),ColorSequenceKeypoint.new(1, Color3.fromRGB(65,48,65))})
 UIGradient_12.Rotation = 0
 UIGradient_12.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
 
 UIGradient_12.Parent = HeaderLine
-HeaderLin2 = Instance.new('Frame')
+local HeaderLin2 = Instance.new('Frame')
 HeaderLin2.Name = "HeaderLin2"
 HeaderLin2.Position = UDim2.new(0,0,1,0)
 HeaderLin2.Size = UDim2.new(0.5,0,0.06800000369548798,0)
@@ -94,14 +96,14 @@ HeaderLin2.AutomaticSize = Enum.AutomaticSize.None
 HeaderLin2.LayoutOrder = 0
 HeaderLin2.Parent = Header
 
-UIGradient_13 = Instance.new('UIGradient')
+local UIGradient_13 = Instance.new('UIGradient')
 UIGradient_13.Name = "UIGradient"
 UIGradient_13.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(63,47,63)),ColorSequenceKeypoint.new(1, Color3.fromRGB(181,136,181))})
 UIGradient_13.Rotation = 0
 UIGradient_13.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
 UIGradient_13.Parent = HeaderLin2
 
-Title = Instance.new('TextLabel')
+local Title = Instance.new('TextLabel')
 Title.Name = "Title"
 Title.Position = UDim2.new(0.30000001192092896,0,0,0)
 Title.Size = UDim2.new(0.30000001192092896,0,0.800000011920929,0)
@@ -123,13 +125,13 @@ Title.TextYAlignment = Enum.TextYAlignment.Center
 Title.LayoutOrder = 0
 Title.Parent = Header
 
-UIGradient_14 = Instance.new('UIGradient')
+local UIGradient_14 = Instance.new('UIGradient')
 UIGradient_14.Name = "UIGradient"
 UIGradient_14.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(18,18,18)),ColorSequenceKeypoint.new(1, Color3.fromRGB(30,30,30))})
 UIGradient_14.Rotation = 90
 UIGradient_14.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
 UIGradient_14.Parent = Header
-UIStroke_7 = Instance.new('UIStroke')
+local UIStroke_7 = Instance.new('UIStroke')
 UIStroke_7.Name = "UIStroke"
 UIStroke_7.Color = Color3.fromRGB(44,44,44)
 UIStroke_7.Transparency = 0
@@ -137,7 +139,7 @@ UIStroke_7.Thickness = 1
 UIStroke_7.ApplyStrokeMode = Enum.ApplyStrokeMode.Contextual
 UIStroke_7.Parent = Frame
 
-Bottom = Instance.new('Frame')
+local Bottom = Instance.new('Frame')
 Bottom.Name = "Bottom"
 Bottom.Position = UDim2.new(0,0,0.9089999794960022,0)
 Bottom.Size = UDim2.new(1,0,0.09000000357627869,0)
@@ -152,7 +154,7 @@ Bottom.AutomaticSize = Enum.AutomaticSize.None
 Bottom.LayoutOrder = 0
 Bottom.Parent = Frame
 
-TabScroll = Instance.new('ScrollingFrame')
+local TabScroll = Instance.new('ScrollingFrame')
 TabScroll.Name = "TabScroll"
 TabScroll.Position = UDim2.new(0,0,0.10000000149011612,0)
 TabScroll.Size = UDim2.new(1,0,0.8989999890327454,0)
@@ -168,7 +170,7 @@ TabScroll.LayoutOrder = 0
 TabScroll.Parent = Bottom
 TabScroll.AutomaticSize = Enum.AutomaticSize.X
 
-UIListLayout = Instance.new('UIListLayout')
+local UIListLayout = Instance.new('UIListLayout')
 UIListLayout.Name = "UIListLayout"
 UIListLayout.FillDirection = Enum.FillDirection.Horizontal
 UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
@@ -177,7 +179,7 @@ UIListLayout.Padding = UDim.new(0,4)
 UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 UIListLayout.Parent = TabScroll
 
-BottomLine = Instance.new('Frame')
+local BottomLine = Instance.new('Frame')
 BottomLine.Name = "BottomLine"
 BottomLine.Position = UDim2.new(0,0,0,0)
 BottomLine.Size = UDim2.new(1,0,0.029999999329447746,0)
@@ -191,13 +193,14 @@ BottomLine.ZIndex = 3
 BottomLine.AutomaticSize = Enum.AutomaticSize.None
 BottomLine.LayoutOrder = 0
 BottomLine.Parent = Bottom
-UIGradient_2 = Instance.new('UIGradient')
+
+local UIGradient_2 = Instance.new('UIGradient')
 UIGradient_2.Name = "UIGradient"
 UIGradient_2.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(255,191,255)),ColorSequenceKeypoint.new(1, Color3.fromRGB(65,48,65))})
 UIGradient_2.Rotation = 0
 UIGradient_2.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
 UIGradient_2.Parent = BottomLine
-BottomLin2 = Instance.new('Frame')
+local BottomLin2 = Instance.new('Frame')
 BottomLin2.Name = "BottomLin2"
 BottomLin2.Position = UDim2.new(0,0,0,0)
 BottomLin2.Size = UDim2.new(0.5,0,0.019999999552965164,0)
@@ -212,7 +215,7 @@ BottomLin2.AutomaticSize = Enum.AutomaticSize.None
 BottomLin2.LayoutOrder = 0
 BottomLin2.Parent = Bottom
 
-UIGradient_3 = Instance.new('UIGradient')
+local UIGradient_3 = Instance.new('UIGradient')
 UIGradient_3.Name = "UIGradient"
 UIGradient_3.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(63,47,63)),ColorSequenceKeypoint.new(1, Color3.fromRGB(181,136,181))})
 UIGradient_3.Rotation = 0
@@ -224,35 +227,11 @@ UIGradient_4.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.from
 UIGradient_4.Rotation = 90
 UIGradient_4.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
 UIGradient_4.Parent = Bottom
-
-Container = Instance.new('Frame')
-Container.Name = "Container"
-Container.Position = UDim2.new(0.014000000432133675,0,0.06700000166893005,0)
-Container.Size = UDim2.new(0.9700000286102295,0,0.8240000009536743,0)
-Container.AnchorPoint = Vector2.new(0,0)
-Container.BackgroundColor3 = Color3.fromRGB(162,162,162)
-Container.BackgroundTransparency = 1
-Container.BorderSizePixel = 1
-Container.ClipsDescendants = false
-Container.Visible = true
-Container.ZIndex = 1
-Container.AutomaticSize = Enum.AutomaticSize.None
-Container.LayoutOrder = 0
-Container.Parent = Frame
-UIListLayout_2 = Instance.new('UIListLayout')
-UIListLayout_2.Name = "UIListLayout"
-UIListLayout_2.FillDirection = Enum.FillDirection.Horizontal
-UIListLayout_2.HorizontalAlignment = Enum.HorizontalAlignment.Left
-UIListLayout_2.VerticalAlignment = Enum.VerticalAlignment.Top
-UIListLayout_2.Padding = UDim.new(0,8)
-UIListLayout_2.SortOrder = Enum.SortOrder.LayoutOrder
-UIListLayout_2.Parent = Container
-
       return Frame
 end
 
 function Bankroll:AddTab(tabtext)
-TabButton = Instance.new('Frame')
+local TabButton = Instance.new('Frame')
 TabButton.Name = "TabButton"
 TabButton.Position = UDim2.new(0,0,0,0)
 TabButton.Size = UDim2.new(0.17000000178813934,0,0.800000011920929,0)
@@ -267,7 +246,7 @@ TabButton.AutomaticSize = Enum.AutomaticSize.None
 TabButton.LayoutOrder = 0
 TabButton.Parent = TabScroll
 
-Text = Instance.new('TextLabel')
+local Text = Instance.new('TextLabel')
 Text.Name = "Text"
 Text.Position = UDim2.new(0,0,0,0)
 Text.Size = UDim2.new(0.9179999828338623,0,0.7870000004768372,0)
@@ -289,7 +268,7 @@ Text.TextYAlignment = Enum.TextYAlignment.Center
 Text.LayoutOrder = 0
 Text.Parent = TabButton
 
-SwitchClick = Instance.new('TextButton')
+local SwitchClick = Instance.new('TextButton')
 SwitchClick.Name = "SwitchClick"
 SwitchClick.Position = UDim2.new(0,0,0,0)
 SwitchClick.Size = UDim2.new(1,0,1,0)
@@ -311,14 +290,14 @@ SwitchClick.TextYAlignment = Enum.TextYAlignment.Center
 SwitchClick.LayoutOrder = 0
 SwitchClick.Parent = TabButton
 
-UIGradient = Instance.new('UIGradient')
+local UIGradient = Instance.new('UIGradient')
 UIGradient.Name = "UIGradient"
 UIGradient.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(16,16,16)),ColorSequenceKeypoint.new(1, Color3.fromRGB(28,28,28))})
 UIGradient.Rotation = -90
 UIGradient.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
 
 UIGradient.Parent = TabButton
-UIStroke = Instance.new('UIStroke')
+local UIStroke = Instance.new('UIStroke')
 UIStroke.Name = "UIStroke"
 UIStroke.Color = Color3.fromRGB(53,53,53)
 UIStroke.Transparency = 0
@@ -331,7 +310,31 @@ end
 
 function Bankroll:AddSection(section, position)
 
-Right = Instance.new('ScrollingFrame')
+local Container = Instance.new('Frame')
+Container.Name = "Container"
+Container.Position = UDim2.new(0.014000000432133675,0,0.06700000166893005,0)
+Container.Size = UDim2.new(0.9700000286102295,0,0.8240000009536743,0)
+Container.AnchorPoint = Vector2.new(0,0)
+Container.BackgroundColor3 = Color3.fromRGB(162,162,162)
+Container.BackgroundTransparency = 1
+Container.BorderSizePixel = 1
+Container.ClipsDescendants = false
+Container.Visible = true
+Container.ZIndex = 1
+Container.AutomaticSize = Enum.AutomaticSize.None
+Container.LayoutOrder = 0
+Container.Parent = Frame
+
+local UIListLayout_2 = Instance.new('UIListLayout')
+UIListLayout_2.Name = "UIListLayout"
+UIListLayout_2.FillDirection = Enum.FillDirection.Horizontal
+UIListLayout_2.HorizontalAlignment = Enum.HorizontalAlignment.Left
+UIListLayout_2.VerticalAlignment = Enum.VerticalAlignment.Top
+UIListLayout_2.Padding = UDim.new(0,8)
+UIListLayout_2.SortOrder = Enum.SortOrder.LayoutOrder
+UIListLayout_2.Parent = Container
+
+local Right = Instance.new('ScrollingFrame')
 Right.Name = "Right"
 Right.Position = UDim2.new(0,0,0,0)
 Right.Size = UDim2.new(0.48899999260902405,0,1,0)
@@ -346,7 +349,7 @@ Right.ZIndex = 1
 Right.LayoutOrder = 2
 Right.Parent = Container
 
-UIListLayout_3 = Instance.new('UIListLayout')
+local UIListLayout_3 = Instance.new('UIListLayout')
 UIListLayout_3.Name = "UIListLayout"
 UIListLayout_3.FillDirection = Enum.FillDirection.Vertical
 UIListLayout_3.HorizontalAlignment = Enum.HorizontalAlignment.Left
@@ -355,7 +358,7 @@ UIListLayout_3.Padding = UDim.new(0,3)
 UIListLayout_3.SortOrder = Enum.SortOrder.LayoutOrder
 UIListLayout_3.Parent = Right
 
-Left = Instance.new('ScrollingFrame')
+local Left = Instance.new('ScrollingFrame')
 Left.Name = "Left"
 Left.Position = UDim2.new(0,0,0,0)
 Left.Size = UDim2.new(0.48899999260902405,0,1,0)
@@ -370,7 +373,7 @@ Left.ZIndex = 1
 Left.LayoutOrder = 1
 Left.Parent = Container
 
-UIListLayout_4 = Instance.new('UIListLayout')
+local UIListLayout_4 = Instance.new('UIListLayout')
 UIListLayout_4.Name = "UIListLayout"
 UIListLayout_4.FillDirection = Enum.FillDirection.Horizontal
 UIListLayout_4.HorizontalAlignment = Enum.HorizontalAlignment.Left
@@ -379,7 +382,7 @@ UIListLayout_4.Padding = UDim.new(0,10)
 UIListLayout_4.SortOrder = Enum.SortOrder.LayoutOrder
 UIListLayout_4.Parent = Left
 
-section = Instance.new('Frame')
+local section = Instance.new('Frame')
 section.Name = "section"
 section.Position = UDim2.new(0,0,0,0)
 section.Size = UDim2.new(0.9800000190734863,0,0,0)
@@ -394,12 +397,12 @@ section.AutomaticSize = Enum.AutomaticSize.Y
 section.LayoutOrder = 0
 section.Parent = Left
 
-UICorner_2 = Instance.new('UICorner')
+local UICorner_2 = Instance.new('UICorner')
 UICorner_2.Name = "UICorner"
 UICorner_2.CornerRadius = UDim.new(0,4)
 UICorner_2.Parent = section
 
-SectionTitle = Instance.new('TextLabel')
+local SectionTitle = Instance.new('TextLabel')
 SectionTitle.Name = "SectionTitle"
 SectionTitle.Position = UDim2.new(0,0,0,0)
 SectionTitle.Size = UDim2.new(1,0,0.9909999966621399,0)
@@ -421,13 +424,13 @@ SectionTitle.TextYAlignment = Enum.TextYAlignment.Center
 SectionTitle.LayoutOrder = 1
 SectionTitle.Parent = section
 
-UIAspectRatioConstraint_2 = Instance.new('UIAspectRatioConstraint')
+local UIAspectRatioConstraint_2 = Instance.new('UIAspectRatioConstraint')
 UIAspectRatioConstraint_2.Name = "UIAspectRatioConstraint"
 UIAspectRatioConstraint_2.AspectRatio = 14
 UIAspectRatioConstraint_2.AspectType = Enum.AspectType.FitWithinMaxSize
 UIAspectRatioConstraint_2.Parent = SectionTitle
 
-UIListLayout_5 = Instance.new('UIListLayout')
+local UIListLayout_5 = Instance.new('UIListLayout')
 UIListLayout_5.Name = "UIListLayout"
 UIListLayout_5.FillDirection = Enum.FillDirection.Vertical
 UIListLayout_5.HorizontalAlignment = Enum.HorizontalAlignment.Left
@@ -436,12 +439,13 @@ UIListLayout_5.Padding = UDim.new(0,6)
 UIListLayout_5.SortOrder = Enum.SortOrder.LayoutOrder
 UIListLayout_5.Parent = section
 
-UIGradient_6 = Instance.new('UIGradient')
+local UIGradient_6 = Instance.new('UIGradient')
 UIGradient_6.Name = "UIGradient"
 UIGradient_6.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(25,25,25)),ColorSequenceKeypoint.new(1, Color3.fromRGB(12,12,12))})
 UIGradient_6.Rotation = 90
 UIGradient_6.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
 UIGradient_6.Parent = section
+
 if position == "left" then
     section.Parent = Left
 elseif position == "right" then
@@ -451,3 +455,5 @@ return section
 end
 
 return Bankroll
+
+
