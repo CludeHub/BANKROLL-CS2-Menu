@@ -1,16 +1,30 @@
-local Bankroll = {}
+Based on the complete Lua module you provided, here is the usage code demonstrating how to create the window, add a tab, and add sections to that tab.
+The Bankroll:AddSection function requires three arguments: the container (returned by AddTab), the title string, and the position string ("left" or "right").
+local Bankroll = require(game.ReplicatedStorage.BankrollModule) -- Assuming your code is in a ModuleScript named 'BankrollModule' in ReplicatedStorage
 
--- Global variables for the main window elements, accessible by other functions
+local menu = Bankroll:AddWindow("Mafia")
+local tab = Bankroll:AddTab("Home")
+local leftSection = Bankroll:AddSection(tab, "Primary Settings", "left") 
+local rightSection = Bankroll:AddSection(tab, "Utility Functions", "right") 
+
+-- You can now add UI elements to the returned section Frames
+local exampleButton = Instance.new("TextButton")
+exampleButton.Size = UDim2.new(1, 0, 0, 30)
+exampleButton.Text = "Example Button"
+exampleButton.Parent = leftSection
+
+Full Module (Without Comments)
+local Bankroll = {}
 local Frame
 local TabScroll
 
-function Bankroll:AddWindow(TitleText) -- Changed parameter name to avoid conflict with instance name
+function Bankroll:AddWindow(TitleText) 
     local PlayerGui = game:GetService('Players').LocalPlayer:WaitForChild('PlayerGui')
     local ScreenGui = Instance.new('ScreenGui')
     ScreenGui.Name = "Bankroll"
     ScreenGui.Parent = PlayerGui
 
-    Frame = Instance.new('Frame') -- Use the outer Frame variable
+    Frame = Instance.new('Frame') 
     Frame.Name = "Frame"
     Frame.Position = UDim2.new(0,0,0,0)
     Frame.Size = UDim2.new(0.5600000023841858,0,0.9390000104904175,0)
@@ -39,7 +53,7 @@ function Bankroll:AddWindow(TitleText) -- Changed parameter name to avoid confli
     UIAspectRatioConstraint_6.AspectRatio = 1.159999966621399
     UIAspectRatioConstraint_6.AspectType = Enum.AspectType.FitWithinMaxSize
     UIAspectRatioConstraint_6.Parent = Frame
-    local UIScale = Instance.new('UIScale') -- Corrected declaration: UIScale was missing 'local'
+    local UIScale = Instance.new('UIScale') 
     UIScale.Name = "UIScale"
     UIScale.Scale = 0.8999999761581421
     UIScale.Parent = Frame
@@ -111,7 +125,7 @@ function Bankroll:AddWindow(TitleText) -- Changed parameter name to avoid confli
     Title.BackgroundColor3 = Color3.fromRGB(162,162,162)
     Title.BackgroundTransparency = 1
     Title.BorderSizePixel = 1
-    Title.Text = TitleText or "Bankroll Mafia" -- Use TitleText parameter
+    Title.Text = TitleText or "Bankroll Mafia" 
     Title.TextColor3 = Color3.fromRGB(255,191,255)
     Title.TextScaled = true
     Title.TextSize = 8
@@ -155,7 +169,7 @@ function Bankroll:AddWindow(TitleText) -- Changed parameter name to avoid confli
     Bottom.LayoutOrder = 0
     Bottom.Parent = Frame
 
-    TabScroll = Instance.new('ScrollingFrame') -- Use the outer TabScroll variable
+    TabScroll = Instance.new('ScrollingFrame') 
     TabScroll.Name = "TabScroll"
     TabScroll.Position = UDim2.new(0,0,0.10000000149011612,0)
     TabScroll.Size = UDim2.new(1,0,0.8989999890327454,0)
@@ -224,7 +238,7 @@ function Bankroll:AddWindow(TitleText) -- Changed parameter name to avoid confli
     UIGradient_3.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
     UIGradient_3.Parent = BottomLin2
 
-    local UIGradient_4 = Instance.new('UIGradient') -- Corrected declaration: UIGradient_4 was missing 'local'
+    local UIGradient_4 = Instance.new('UIGradient') 
     UIGradient_4.Name = "UIGradient"
     UIGradient_4.Color = ColorSequence.new({ColorSequenceKeypoint.new(0, Color3.fromRGB(18,18,18)),ColorSequenceKeypoint.new(1, Color3.fromRGB(30,30,30))})
     UIGradient_4.Rotation = 90
@@ -235,7 +249,6 @@ function Bankroll:AddWindow(TitleText) -- Changed parameter name to avoid confli
 end
 
 function Bankroll:AddTab(tabtext)
-    -- Check if AddWindow has been called and Frame exists
     if not Frame or not TabScroll then
         warn("Bankroll:AddWindow must be called first!")
         return
@@ -243,7 +256,6 @@ function Bankroll:AddTab(tabtext)
 
     local Container = Instance.new('Frame')
     Container.Name = tabtext .. "_Container"
-    -- These position and size values are typical for a tab page inside a main frame
     Container.Position = UDim2.new(0.014,0,0.067,0)
     Container.Size = UDim2.new(0.97,0,0.824,0)
     Container.AnchorPoint = Vector2.new(0,0)
@@ -255,9 +267,8 @@ function Bankroll:AddTab(tabtext)
     Container.ZIndex = 1
     Container.AutomaticSize = Enum.AutomaticSize.None
     Container.LayoutOrder = 0
-    Container.Parent = Frame -- Parent to the main Frame
+    Container.Parent = Frame 
 
-    -- Create the Left and Right ScrollingFrames inside the Container for sections
     local UIListLayout_Container = Instance.new('UIListLayout')
     UIListLayout_Container.Name = "UIListLayout"
     UIListLayout_Container.FillDirection = Enum.FillDirection.Horizontal
@@ -306,21 +317,16 @@ function Bankroll:AddTab(tabtext)
     Left.LayoutOrder = 1
     Left.Parent = Container
 
-    -- The UIListLayout_4 was likely intended for the sections *inside* the Left scrolling frame,
-    -- but its definition in the original code made it a child of the Left frame *before* it was created.
-    -- I've kept it as it was in the original code, but it is typically better to put list layouts inside scrolling frames
-    -- that hold the items. However, based on the original code's structure:
     local UIListLayout_4 = Instance.new('UIListLayout')
     UIListLayout_4.Name = "UIListLayout"
-    UIListLayout_4.FillDirection = Enum.FillDirection.Vertical -- Changed to Vertical for a scrolling frame of sections
+    UIListLayout_4.FillDirection = Enum.FillDirection.Vertical 
     UIListLayout_4.HorizontalAlignment = Enum.HorizontalAlignment.Left
     UIListLayout_4.VerticalAlignment = Enum.VerticalAlignment.Top
     UIListLayout_4.Padding = UDim.new(0,10)
     UIListLayout_4.SortOrder = Enum.SortOrder.LayoutOrder
-    UIListLayout_4.Parent = Left -- Keeping original parenting
+    UIListLayout_4.Parent = Left 
 
 
-    -- Tab Button creation (unchanged)
     local TabButton = Instance.new('Frame')
     TabButton.Name = "TabButton"
     TabButton.Position = UDim2.new(0,0,0,0)
@@ -395,41 +401,32 @@ function Bankroll:AddTab(tabtext)
     UIStroke.ApplyStrokeMode = Enum.ApplyStrokeMode.Border
     UIStroke.Parent = TabButton
 
-    -- Tab switching logic
     SwitchClick.MouseButton1Click:Connect(function()
-        -- Iterate over all children of the main Frame (which includes the header and bottom frames)
         for _, child in pairs(Frame:GetChildren()) do
-            -- Find only the tab containers (frames ending in "_Container") and hide them
             if child:IsA("Frame") and child.Name:match("_Container$") then
                 child.Visible = false
             end
         end
-        -- Show the clicked tab's container
         Container.Visible = true
     end)
     
-    -- Ensure the first tab created is visible by default
-    -- This relies on the global 'Frame' variable being set, which it is in AddWindow
     local firstTab = Frame:FindFirstChildOfClass("Frame", true) 
     if firstTab and firstTab.Name:match("_Container$") and not Frame:FindFirstChildWhichIsA("Frame", true).Visible then
         Container.Visible = true
     end
 
 
-    -- Return the container for adding sections/content
     return Container
 end
 
 
 function Bankroll:AddSection(tabContainer, title, position)
-    -- Check for required arguments
     if not tabContainer or not tabContainer:IsA("Frame") then
         warn("Bankroll:AddSection requires a valid tabContainer (Frame).")
         return
     end
 
     local ParentScrollingFrame
-    -- Determine the correct parent ScrollingFrame (Left or Right) inside the tab container
     if position and position:lower() == "right" then
         ParentScrollingFrame = tabContainer:FindFirstChild("Right")
     elseif position and position:lower() == "left" then
@@ -457,7 +454,7 @@ function Bankroll:AddSection(tabContainer, title, position)
     section.ZIndex = 1
     section.AutomaticSize = Enum.AutomaticSize.Y
     section.LayoutOrder = 0
-    section.Parent = ParentScrollingFrame -- Corrected parent
+    section.Parent = ParentScrollingFrame 
 
     local UICorner_2 = Instance.new('UICorner')
     UICorner_2.Name = "UICorner"
@@ -472,7 +469,7 @@ function Bankroll:AddSection(tabContainer, title, position)
     SectionTitle.BackgroundColor3 = Color3.fromRGB(162,162,162)
     SectionTitle.BackgroundTransparency = 1
     SectionTitle.BorderSizePixel = 1
-    SectionTitle.Text = title or "Section" -- Define Text here
+    SectionTitle.Text = title or "Section" 
     SectionTitle.TextColor3 = Color3.fromRGB(123,123,123)
     SectionTitle.TextScaled = true
     SectionTitle.TextSize = 8
@@ -507,10 +504,9 @@ function Bankroll:AddSection(tabContainer, title, position)
     UIGradient_6.Rotation = 90
     UIGradient_6.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
     UIGradient_6.Parent = section
-
-    -- The positioning logic was moved to the beginning to set the ParentScrollingFrame correctly
     
     return section
 end
 
 return Bankroll
+
