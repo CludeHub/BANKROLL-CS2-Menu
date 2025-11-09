@@ -1,244 +1,296 @@
---// Bankroll Mafia Style UI Library
---// by ChatGPT (GPT-5)
-
-local Bankroll = {}
-Bankroll.__index = Bankroll
+-- CS2 Full Mobile-Optimized UI Library
+local CS2UI = {}
+CS2UI.__index = CS2UI
 
 local Players = game:GetService("Players")
-local LocalPlayer = Players.LocalPlayer
-local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+local TweenService = game:GetService("TweenService")
+local UserInputService = game:GetService("UserInputService")
 
---// Utility
-local function Create(instance, props)
-    local obj = Instance.new(instance)
-    for i,v in pairs(props) do
-        obj[i] = v
-    end
-    return obj
+-- Tween helper
+local function tween(inst, props, t)
+	t = t or 0.25
+	TweenService:Create(inst, TweenInfo.new(t, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), props):Play()
 end
 
------------------------------------------------------------
---  MAIN WINDOW
------------------------------------------------------------
-function Bankroll:CreateWindow(name)
-    local ScreenGui = Create("ScreenGui", {
-        Parent = PlayerGui,
-        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
-        Name = name or "BankrollMafiaUI"
-    })
-
-    local Main = Create("Frame", {
-        Parent = ScreenGui,
-        Size = UDim2.new(0, 640, 0, 420),
-        BackgroundColor3 = Color3.fromRGB(15, 15, 15),
-        BorderSizePixel = 0
-    })
-
-    -- TOP TITLE BAR
-    local Title = Create("TextLabel", {
-        Parent = Main,
-        Size = UDim2.new(1, 0, 0, 28),
-        BackgroundTransparency = 1,
-        Text = name or "bankroll mafia",
-        TextColor3 = Color3.fromRGB(230, 180, 255),
-        TextSize = 18,
-        Font = Enum.Font.GothamBold
-    })
-
-    -- GRADIENT EFFECT
-    local Gradient = Instance.new("UIGradient")
-    Gradient.Color = ColorSequence.new{
-        ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 0, 255)),
-        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
-    }
-    Gradient.Rotation = 90
-    Gradient.Parent = Main
-
-    -----------------------------------------------------------
-    -- PANELS (left + right)
-    -----------------------------------------------------------
-    local LeftPanel = Create("Frame", {
-        Parent = Main,
-        Position = UDim2.new(0, 10, 0, 35),
-        Size = UDim2.new(0.48, -15, 1, -70),
-        BackgroundColor3 = Color3.fromRGB(20, 20, 20),
-        BorderSizePixel = 0
-    })
-
-    local RightPanel = Create("Frame", {
-        Parent = Main,
-        Position = UDim2.new(0.52, 5, 0, 35),
-        Size = UDim2.new(0.48, -15, 1, -70),
-        BackgroundColor3 = Color3.fromRGB(20, 20, 20),
-        BorderSizePixel = 0
-    })
-
-    self.Main = Main
-    self.LeftPanel = LeftPanel
-    self.RightPanel = RightPanel
-
-    -----------------------------------------------------------
-    -- FOOTER TABS
-    -----------------------------------------------------------
-    local Tabs = Create("Frame", {
-        Parent = Main,
-        Size = UDim2.new(1, 0, 0, 40),
-        Position = UDim2.new(0, 0, 1, -40),
-        BackgroundColor3 = Color3.fromRGB(15, 15, 15),
-        BorderSizePixel = 0
-    })
-
-    local UIList = Create("UIListLayout", {
-        Parent = Tabs,
-        FillDirection = Enum.FillDirection.Horizontal,
-        Padding = UDim.new(0, 15),
-        VerticalAlignment = Enum.VerticalAlignment.Center,
-        HorizontalAlignment = Enum.HorizontalAlignment.Center
-    })
-
-    self.Tabs = Tabs
-    return self
+-- Utility function to create scaled size
+local function scaled(val)
+	return UDim2.new(val,0,val,0)
 end
 
------------------------------------------------------------
--- TAB BUTTON
------------------------------------------------------------
-function Bankroll:AddTab(text)
-    local Button = Create("TextButton", {
-        Parent = self.Tabs,
-        Text = text,
-        Size = UDim2.new(0, 90, 0, 28),
-        BackgroundTransparency = 1,
-        TextColor3 = Color3.fromRGB(200, 160, 255),
-        Font = Enum.Font.Gotham,
-        TextSize = 16
-    })
-    return Button
+-- Create main window
+function CS2UI:CreateWindow(title)
+	local ScreenGui = Instance.new("ScreenGui")
+	ScreenGui.Name = title.."UI"
+	ScreenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+	ScreenGui.ResetOnSpawn = false
+
+	local MainFrame = Instance.new("Frame")
+	MainFrame.Size = UDim2.new(0.9,0,0.8,0)
+	MainFrame.Position = UDim2.new(0.05,0,0.1,0)
+	MainFrame.BackgroundColor3 = Color3.fromRGB(25,25,25)
+	MainFrame.BorderSizePixel = 0
+	MainFrame.ClipsDescendants = true
+	MainFrame.Parent = ScreenGui
+
+	local aspect = Instance.new("UIAspectRatioConstraint")
+	aspect.AspectRatio = 1.3
+	aspect.AspectType = Enum.AspectType.ScaleWithParentSize
+	aspect.Parent = MainFrame
+
+	local gradient = Instance.new("UIGradient")
+	gradient.Color = ColorSequence.new{ColorSequenceKeypoint.new(0,Color3.fromRGB(40,40,40)),ColorSequenceKeypoint.new(1,Color3.fromRGB(15,15,15))}
+	gradient.Rotation = 45
+	gradient.Parent = MainFrame
+
+	local selfWindow = {ScreenGui = ScreenGui, MainFrame = MainFrame, Tabs = {}}
+	setmetatable(selfWindow, CS2UI)
+	return selfWindow
 end
 
------------------------------------------------------------
--- SECTION HEADER
------------------------------------------------------------
-function Bankroll:AddSection(parentSide, title)
-    local Frame = parentSide == "left" and self.LeftPanel or self.RightPanel
+-- Add Tab
+function CS2UI:AddTab(name)
+	local tabCount = #self.Tabs
+	local tabButton = Instance.new("TextButton")
+	tabButton.Text = name
+	tabButton.Size = UDim2.new(0.2,0,0.06,0)
+	tabButton.Position = UDim2.new(0.05 + tabCount*0.21,0,0.02,0)
+	tabButton.BackgroundColor3 = Color3.fromRGB(35,35,35)
+	tabButton.TextColor3 = Color3.fromRGB(255,255,255)
+	tabButton.Parent = self.MainFrame
 
-    local Section = Create("Frame", {
-        Parent = Frame,
-        BackgroundTransparency = 1,
-        Size = UDim2.new(1, 0, 0, 40)
-    })
+	local tabFrame = Instance.new("ScrollingFrame")
+	tabFrame.Size = UDim2.new(0.9,0,0.85,0)
+	tabFrame.Position = UDim2.new(0.05,0,0.1,0)
+	tabFrame.BackgroundTransparency = 1
+	tabFrame.ScrollBarThickness = 8
+	tabFrame.CanvasSize = UDim2.new(0,0,0,0)
+	tabFrame.Visible = false
+	tabFrame.Parent = self.MainFrame
 
-    local Label = Create("TextLabel", {
-        Parent = Section,
-        Size = UDim2.new(1, 0, 0, 18),
-        BackgroundTransparency = 1,
-        Text = title,
-        Font = Enum.Font.GothamBold,
-        TextColor3 = Color3.fromRGB(230, 200, 255),
-        TextSize = 16,
-        TextXAlignment = Enum.TextXAlignment.Left
-    })
+	self.Tabs[name] = {Button = tabButton, Frame = tabFrame, Elements = {}}
 
-    return Section
+	tabButton.MouseButton1Click:Connect(function()
+		for _,v in pairs(self.Tabs) do
+			v.Frame.Visible = false
+		end
+		tabFrame.Visible = true
+	end)
+
+	return tabFrame
 end
 
------------------------------------------------------------
--- TOGGLE
------------------------------------------------------------
-function Bankroll:AddToggle(parent, title, callback)
-    local Toggle = Create("Frame", {
-        Parent = parent,
-        BackgroundTransparency = 1,
-        Size = UDim2.new(1, 0, 0, 24)
-    })
-
-    local Box = Create("Frame", {
-        Parent = Toggle,
-        BackgroundColor3 = Color3.fromRGB(170, 100, 255),
-        Size = UDim2.new(0, 16, 0, 16),
-        Position = UDim2.new(0, 0, 0.5, -8),
-        BorderSizePixel = 0
-    })
-
-    local Label = Create("TextLabel", {
-        Parent = Toggle,
-        BackgroundTransparency = 1,
-        Position = UDim2.new(0, 25, 0, 0),
-        Size = UDim2.new(1, -25, 1, 0),
-        Text = title,
-        Font = Enum.Font.Gotham,
-        TextColor3 = Color3.fromRGB(220, 200, 255),
-        TextSize = 14,
-        TextXAlignment = Enum.TextXAlignment.Left
-    })
-
-   local toggled = false
-    Toggle.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 then
-            toggled = not toggled
-            Box.BackgroundTransparency = toggled and 0 or 0.7
-            if callback then callback(toggled) end
-        end
-    end)
-
-    return Toggle
+-- Add Button
+function CS2UI:AddButton(parent, text, callback)
+	local btn = Instance.new("TextButton")
+	btn.Size = UDim2.new(1,0,0,0.07*parent.AbsoluteSize.Y)
+	btn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+	btn.TextColor3 = Color3.fromRGB(255,255,255)
+	btn.Text = text
+	btn.Parent = parent
+	btn.MouseEnter:Connect(function() tween(btn,{BackgroundColor3=Color3.fromRGB(70,70,70)}) end)
+	btn.MouseLeave:Connect(function() tween(btn,{BackgroundColor3=Color3.fromRGB(50,50,50)}) end)
+	btn.MouseButton1Click:Connect(callback)
+	return btn
 end
 
------------------------------------------------------------
--- DROPDOWN (Simple)
------------------------------------------------------------
-function Bankroll:AddDropdown(parent, title, list, callback)
-    local Holder = Create("Frame", {
-        Parent = parent,
-        BackgroundTransparency = 1,
-        Size = UDim2.new(1, 0, 0, 28)
-    })
+-- Add Toggle
+function CS2UI:AddToggle(parent, text, default, callback)
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.new(1,0,0,0.07*parent.AbsoluteSize.Y)
+	frame.BackgroundTransparency = 1
+	frame.Parent = parent
 
-    local Button = Create("TextButton", {
-        Parent = Holder,
-        BackgroundColor3 = Color3.fromRGB(25, 25, 25),
-        BorderSizePixel = 0,
-        Text = title,
-        TextColor3 = Color3.fromRGB(240, 200, 255),
-        TextSize = 14,
-        Font = Enum.Font.Gotham,
-        Size = UDim2.new(1, 0, 1, 0)
-    })
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(0.7,0,1,0)
+	label.Text = text
+	label.TextColor3 = Color3.fromRGB(255,255,255)
+	label.BackgroundTransparency = 1
+	label.Parent = frame
 
-    local ListFrame = Create("Frame", {
-        Parent = Holder,
-        BackgroundColor3 = Color3.fromRGB(22, 22, 22),
-        BorderSizePixel = 0,
-        Position = UDim2.new(0, 0, 1, 2),
-        Size = UDim2.new(1, 0, 0, #list * 20),
-        Visible = false
-    })
+	local box = Instance.new("TextButton")
+	box.Size = UDim2.new(0.2,0,0.8,0)
+	box.Position = UDim2.new(0.75,0,0.1,0)
+	box.Text = ""
+	box.BackgroundColor3 = default and Color3.fromRGB(0,222,255) or Color3.fromRGB(50,50,50)
+	box.Parent = frame
 
-    local Layout = Instance.new("UIListLayout", ListFrame)
+	box.MouseButton1Click:Connect(function()
+		default = not default
+		box.BackgroundColor3 = default and Color3.fromRGB(0,222,255) or Color3.fromRGB(50,50,50)
+		if callback then callback(default) end
+	end)
 
-    for _, option in ipairs(list) do
-        local Option = Create("TextButton", {
-            Parent = ListFrame,
-            Text = option,
-            BackgroundTransparency = 1,
-            TextColor3 = Color3.fromRGB(255, 200, 255),
-            Font = Enum.Font.Gotham,
-            TextSize = 14,
-            Size = UDim2.new(1, 0, 0, 20)
-        })
-
-        Option.MouseButton1Click:Connect(function()
-            Button.Text = option
-            ListFrame.Visible = false
-            if callback then callback(option) end
-        end)
-    end
-
-    Button.MouseButton1Click:Connect(function()
-        ListFrame.Visible = not ListFrame.Visible
-    end)
-
-    return Holder
+	return frame
 end
 
-return Bankroll
+-- Add Slider
+function CS2UI:AddSlider(parent, text, min, max, default, callback)
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.new(1,0,0,0.07*parent.AbsoluteSize.Y)
+	frame.BackgroundTransparency = 1
+	frame.Parent = parent
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(0.4,0,1,0)
+	label.Text = text
+	label.TextColor3 = Color3.fromRGB(255,255,255)
+	label.BackgroundTransparency = 1
+	label.Parent = frame
+
+	local sliderBG = Instance.new("Frame")
+	sliderBG.Size = UDim2.new(0.55,0,0.4,0)
+	sliderBG.Position = UDim2.new(0.43,0,0.3,0)
+	sliderBG.BackgroundColor3 = Color3.fromRGB(50,50,50)
+	sliderBG.Parent = frame
+
+	local sliderFill = Instance.new("Frame")
+	sliderFill.Size = UDim2.new((default-min)/(max-min),0,1,0)
+	sliderFill.BackgroundColor3 = Color3.fromRGB(0,222,255)
+	sliderFill.Parent = sliderBG
+
+	local dragging = false
+	sliderBG.InputBegan:Connect(function(input)
+		if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then dragging=true end
+	end)
+	sliderBG.InputEnded:Connect(function(input)
+		if input.UserInputType==Enum.UserInputType.Touch or input.UserInputType==Enum.UserInputType.MouseButton1 then dragging=false end
+	end)
+	sliderBG.InputChanged:Connect(function(input)
+		if dragging and input.UserInputType==Enum.UserInputType.MouseMovement then
+			local pos = math.clamp((input.Position.X - sliderBG.AbsolutePosition.X)/sliderBG.AbsoluteSize.X,0,1)
+			sliderFill.Size = UDim2.new(pos,0,1,0)
+			local value = min + (max-min)*pos
+			if callback then callback(value) end
+		end
+	end)
+
+	return frame
+end
+
+-- Add Dropdown
+function CS2UI:AddDropdown(parent, text, options, callback)
+	local frame = Instance.new("Frame")
+	frame.Size = UDim2.new(1,0,0,0.07*parent.AbsoluteSize.Y)
+	frame.BackgroundTransparency = 1
+	frame.Parent = parent
+
+	local label = Instance.new("TextLabel")
+	label.Size = UDim2.new(0.4,0,1,0)
+	label.Text = text
+	label.TextColor3 = Color3.fromRGB(255,255,255)
+	label.BackgroundTransparency = 1
+	label.Parent = frame
+
+	local dropBtn = Instance.new("TextButton")
+	dropBtn.Size = UDim2.new(0.5,0,1,0)
+	dropBtn.Position = UDim2.new(0.5,0,0,0)
+	dropBtn.Text = "Select"
+	dropBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+	dropBtn.TextColor3 = Color3.fromRGB(255,255,255)
+	dropBtn.Parent = frame
+
+	local dropFrame = Instance.new("ScrollingFrame")
+	dropFrame.Size = UDim2.new(0.5,0,0,0)
+	dropFrame.Position = UDim2.new(0.5,0,1,0)
+	dropFrame.CanvasSize = UDim2.new(0,0,0,0)
+	dropFrame.BackgroundColor3 = Color3.fromRGB(40,40,40)
+	dropFrame.ScrollBarThickness = 6
+	dropFrame.Visible = false
+	dropFrame.Parent = frame
+
+	dropBtn.MouseButton1Click:Connect(function() dropFrame.Visible = not dropFrame.Visible end)
+
+	local optionY = 0
+	for i,opt in pairs(options) do
+		local optBtn = Instance.new("TextButton")
+		optBtn.Size = UDim2.new(1,0,0,0.07*parent.AbsoluteSize.Y)
+		optBtn.Position = UDim2.new(0,0,0,optionY)
+		optBtn.Text = opt
+		optBtn.BackgroundColor3 = Color3.fromRGB(50,50,50)
+		optBtn.TextColor3 = Color3.fromRGB(255,255,255)
+		optBtn.Parent = dropFrame
+		optBtn.MouseButton1Click:Connect(function()
+			dropBtn.Text = opt
+			dropFrame.Visible = false
+			if callback then callback(opt) end
+		end)
+		optionY = optionY + 0.07*parent.AbsoluteSize.Y
+		dropFrame.CanvasSize = UDim2.new(0,0,0,optionY)
+	end
+
+	return frame
+end
+
+-- Add MultiSelect Dropdown
+function CS2UI:AddMultiDropdown(parent, text, options, callback)
+	local selected = {}
+	local frame = self:AddDropdown(parent, text, options, function(opt)
+		if table.find(selected,opt) then
+			for i,v in pairs(selected) do
+				if v==opt then table.remove(selected,i) break end
+			end
+		else
+			table.insert(selected,opt)
+		end
+		if callback then callback(selected) end
+	end)
+	return frame
+end
+
+-- Add Toggle+Slider
+function CS2UI:AddToggleSlider(parent, text, defaultToggle, min, max, defaultSlider, callback)
+	local frame = self:AddToggle(parent,text,defaultToggle,function(t)
+		callback(t,nil)
+	end)
+	local slider = self:AddSlider(parent,text,min,max,defaultSlider,function(s)
+		callback(nil,s)
+	end)
+	return frame, slider
+end
+
+-- Add Toggle+Dropdown
+function CS2UI:AddToggleDropdown(parent,text,defaultToggle,options,callback)
+	local frame = self:AddToggle(parent,text,defaultToggle,function(t)
+		callback(t,nil)
+	end)
+	local drop = self:AddDropdown(parent,text,options,function(d)
+		callback(nil,d)
+	end)
+	return frame, drop
+end
+
+-- Add Slider+Dropdown
+function CS2UI:AddSliderDropdown(parent,text,min,max,default,options,callback)
+	local slider = self:AddSlider(parent,text,min,max,default,function(s)
+		callback(nil,s)
+	end)
+	local drop = self:AddDropdown(parent,text,options,function(d)
+		callback(nil,d)
+	end)
+	return slider, drop
+end
+
+-- Add Slider+ColorPicker
+function CS2UI:AddSliderColor(parent,text,min,max,default,defaultColor,callback)
+	local slider = self:AddSlider(parent,text,min,max,default,function(s)
+		callback(nil,s,nil)
+	end)
+	-- Simple colorpicker button
+	local colorBtn = self:AddButton(parent,"Pick Color",function()
+		callback(nil,nil,Color3.fromRGB(math.random(0,255),math.random(0,255),math.random(0,255)))
+	end)
+	return slider, colorBtn
+end
+
+-- Add Dropdown+ColorPicker
+function CS2UI:AddDropdownColor(parent,text,options,defaultColor,callback)
+	local drop = self:AddDropdown(parent,text,options,function(d)
+		callback(d,nil)
+	end)
+	local colorBtn = self:AddButton(parent,"Pick Color",function()
+		callback(nil,Color3.fromRGB(math.random(0,255),math.random(0,255),math.random(0,255)))
+	end)
+	return drop,colorBtn
+end
+
+return CS2UI
