@@ -1,433 +1,244 @@
---!strict
-local UILibrary = {}
+--// Bankroll Mafia Style UI Library
+--// by ChatGPT (GPT-5)
 
--- Configuration for colors and fonts
-UILibrary.Config = {
-    PrimaryColor = Color3.fromRGB(30, 30, 30),
-    AccentColor = Color3.fromRGB(150, 75, 200), -- A purple-ish accent
-    TextColor = Color3.fromRGB(255, 255, 255),
-    Font = Enum.Font.SourceSans,
-    FontSize = Enum.FontSize.Size18,
-    Padding = 10,
-    HeaderHeight = 30,
-    ItemHeight = 25,
-    CornerRadius = 5,
-}
+local Bankroll = {}
+Bankroll.__index = Bankroll
 
--- Function to create a base UI element with scaling and aspect ratio
-local function createBaseElement(name: string, parent: Instance, size: UDim2, position: UDim2, order: number?)
-    local element = Instance.new("Frame")
-    element.Name = name
-    element.Parent = parent
-    element.Size = size
-    element.Position = position
-    element.BackgroundTransparency = 1
-    if order then
-        element.ZIndex = order
+local Players = game:GetService("Players")
+local LocalPlayer = Players.LocalPlayer
+local PlayerGui = LocalPlayer:WaitForChild("PlayerGui")
+
+--// Utility
+local function Create(instance, props)
+    local obj = Instance.new(instance)
+    for i,v in pairs(props) do
+        obj[i] = v
     end
-
-    local aspectRatioConstraint = Instance.new("UIAspectRatioConstraint")
-    aspectRatioConstraint.Parent = element
-    aspectRatioConstraint.AspectRatio = size.X.Scale / size.Y.Scale
-    aspectRatioConstraint.DominantAxis = Enum.DominantAxis.Width -- Maintain width and scale height
-
-    return element
+    return obj
 end
 
--- Function to create a main window/frame
-function UILibrary.createWindow(title: string, parent: Instance, size: UDim2, position: UDim2): Frame
-    local window = createBaseElement("Window", parent, size, position, 1)
-    window.BackgroundColor3 = UILibrary.Config.PrimaryColor
-    window.BorderSizePixel = 0
-    window.ClipsDescendants = true
+-----------------------------------------------------------
+--  MAIN WINDOW
+-----------------------------------------------------------
+function Bankroll:CreateWindow(name)
+    local ScreenGui = Create("ScreenGui", {
+        Parent = PlayerGui,
+        ZIndexBehavior = Enum.ZIndexBehavior.Sibling,
+        Name = name or "BankrollMafiaUI"
+    })
 
-    local header = createBaseElement("Header", window, UDim2.new(1, 0, 0, UILibrary.Config.HeaderHeight), UDim2.new(0, 0, 0, 0))
-    header.BackgroundColor3 = UILibrary.Config.PrimaryColor
-    header.BorderSizePixel = 0
+    local Main = Create("Frame", {
+        Parent = ScreenGui,
+        Size = UDim2.new(0, 640, 0, 420),
+        BackgroundColor3 = Color3.fromRGB(15, 15, 15),
+        BorderSizePixel = 0
+    })
 
-    local headerLabel = Instance.new("TextLabel")
-    headerLabel.Name = "Title"
-    headerLabel.Parent = header
-    headerLabel.Size = UDim2.new(1, -UILibrary.Config.Padding * 2, 1, 0)
-    headerLabel.Position = UDim2.new(0, UILibrary.Config.Padding, 0, 0)
-    headerLabel.BackgroundColor3 = UILibrary.Config.PrimaryColor
-    headerLabel.BackgroundTransparency = 1
-    headerLabel.Text = title
-    headerLabel.TextColor3 = UILibrary.Config.TextColor
-    headerLabel.Font = UILibrary.Config.Font
-    headerLabel.TextSize = UILibrary.Config.FontSize.Value
-    headerLabel.TextXAlignment = Enum.TextXAlignment.Left
-    headerLabel.TextYAlignment = Enum.TextYAlignment.Center
+    -- TOP TITLE BAR
+    local Title = Create("TextLabel", {
+        Parent = Main,
+        Size = UDim2.new(1, 0, 0, 28),
+        BackgroundTransparency = 1,
+        Text = name or "bankroll mafia",
+        TextColor3 = Color3.fromRGB(230, 180, 255),
+        TextSize = 18,
+        Font = Enum.Font.GothamBold
+    })
 
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, UILibrary.Config.CornerRadius)
-    corner.Parent = window
+    -- GRADIENT EFFECT
+    local Gradient = Instance.new("UIGradient")
+    Gradient.Color = ColorSequence.new{
+        ColorSequenceKeypoint.new(0, Color3.fromRGB(120, 0, 255)),
+        ColorSequenceKeypoint.new(1, Color3.fromRGB(0, 0, 0))
+    }
+    Gradient.Rotation = 90
+    Gradient.Parent = Main
 
-    return window
+    -----------------------------------------------------------
+    -- PANELS (left + right)
+    -----------------------------------------------------------
+    local LeftPanel = Create("Frame", {
+        Parent = Main,
+        Position = UDim2.new(0, 10, 0, 35),
+        Size = UDim2.new(0.48, -15, 1, -70),
+        BackgroundColor3 = Color3.fromRGB(20, 20, 20),
+        BorderSizePixel = 0
+    })
+
+    local RightPanel = Create("Frame", {
+        Parent = Main,
+        Position = UDim2.new(0.52, 5, 0, 35),
+        Size = UDim2.new(0.48, -15, 1, -70),
+        BackgroundColor3 = Color3.fromRGB(20, 20, 20),
+        BorderSizePixel = 0
+    })
+
+    self.Main = Main
+    self.LeftPanel = LeftPanel
+    self.RightPanel = RightPanel
+
+    -----------------------------------------------------------
+    -- FOOTER TABS
+    -----------------------------------------------------------
+    local Tabs = Create("Frame", {
+        Parent = Main,
+        Size = UDim2.new(1, 0, 0, 40),
+        Position = UDim2.new(0, 0, 1, -40),
+        BackgroundColor3 = Color3.fromRGB(15, 15, 15),
+        BorderSizePixel = 0
+    })
+
+    local UIList = Create("UIListLayout", {
+        Parent = Tabs,
+        FillDirection = Enum.FillDirection.Horizontal,
+        Padding = UDim.new(0, 15),
+        VerticalAlignment = Enum.VerticalAlignment.Center,
+        HorizontalAlignment = Enum.HorizontalAlignment.Center
+    })
+
+    self.Tabs = Tabs
+    return self
 end
 
--- Function to create a section/group within a window
-function UILibrary.createSection(name: string, parent: Frame, height: UDim): Frame
-    local section = createBaseElement("Section_" .. name, parent, UDim2.new(1, -UILibrary.Config.Padding * 2, height.Scale, height.Offset), UDim2.new(0, UILibrary.Config.Padding, 0, 0))
-    section.BackgroundColor3 = UILibrary.Config.PrimaryColor
-    section.BorderSizePixel = 0
-
-    local sectionLabel = Instance.new("TextLabel")
-    sectionLabel.Name = "SectionTitle"
-    sectionLabel.Parent = section
-    sectionLabel.Size = UDim2.new(1, 0, 0, UILibrary.Config.ItemHeight)
-    sectionLabel.BackgroundTransparency = 1
-    sectionLabel.Text = name
-    sectionLabel.TextColor3 = UILibrary.Config.TextColor
-    sectionLabel.Font = UILibrary.Config.Font
-    sectionLabel.TextSize = UILibrary.Config.FontSize.Value
-    sectionLabel.TextXAlignment = Enum.TextXAlignment.Left
-    sectionLabel.TextYAlignment = Enum.TextYAlignment.Center
-    sectionLabel.Position = UDim2.new(0, 0, 0, 0)
-
-    -- Layout for items within the section
-    local UIListLayout = Instance.new("UIListLayout")
-    UIListLayout.Parent = section
-    UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-    UIListLayout.Padding = UDim.new(0, UILibrary.Config.Padding)
-    UIListLayout.FillDirection = Enum.FillDirection.Vertical
-    UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-    UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-
-    -- Set the section title to the first item
-    sectionLabel.LayoutOrder = 1
-
-    return section
+-----------------------------------------------------------
+-- TAB BUTTON
+-----------------------------------------------------------
+function Bankroll:AddTab(text)
+    local Button = Create("TextButton", {
+        Parent = self.Tabs,
+        Text = text,
+        Size = UDim2.new(0, 90, 0, 28),
+        BackgroundTransparency = 1,
+        TextColor3 = Color3.fromRGB(200, 160, 255),
+        Font = Enum.Font.Gotham,
+        TextSize = 16
+    })
+    return Button
 end
 
--- Function to create a toggle switch
-function UILibrary.createToggle(label: string, parent: Frame, defaultValue: boolean): Frame
-    local toggleFrame = createBaseElement("Toggle_" .. label, parent, UDim2.new(1, 0, 0, UILibrary.Config.ItemHeight), UDim2.new(0, 0, 0, 0))
-    toggleFrame.BackgroundTransparency = 1
+-----------------------------------------------------------
+-- SECTION HEADER
+-----------------------------------------------------------
+function Bankroll:AddSection(parentSide, title)
+    local Frame = parentSide == "left" and self.LeftPanel or self.RightPanel
 
-    local toggleLabel = Instance.new("TextLabel")
-    toggleLabel.Name = "Label"
-    toggleLabel.Parent = toggleFrame
-    toggleLabel.Size = UDim2.new(0.8, 0, 1, 0)
-    toggleLabel.Position = UDim2.new(0, 0, 0, 0)
-    toggleLabel.BackgroundTransparency = 1
-    toggleLabel.Text = label
-    toggleLabel.TextColor3 = UILibrary.Config.TextColor
-    toggleLabel.Font = UILibrary.Config.Font
-    toggleLabel.TextSize = UILibrary.Config.FontSize.Value
-    toggleLabel.TextXAlignment = Enum.TextXAlignment.Left
-    toggleLabel.TextYAlignment = Enum.TextYAlignment.Center
+    local Section = Create("Frame", {
+        Parent = Frame,
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 0, 40)
+    })
 
-    local toggleButton = Instance.new("TextButton")
-    toggleButton.Name = "Button"
-    toggleButton.Parent = toggleFrame
-    toggleButton.Size = UDim2.new(0.15, 0, 0.8, 0)
-    toggleButton.Position = UDim2.new(0.85, 0, 0.1, 0)
-    toggleButton.BackgroundColor3 = UILibrary.Config.AccentColor
-    toggleButton.BorderSizePixel = 0
-    toggleButton.Text = ""
+    local Label = Create("TextLabel", {
+        Parent = Section,
+        Size = UDim2.new(1, 0, 0, 18),
+        BackgroundTransparency = 1,
+        Text = title,
+        Font = Enum.Font.GothamBold,
+        TextColor3 = Color3.fromRGB(230, 200, 255),
+        TextSize = 16,
+        TextXAlignment = Enum.TextXAlignment.Left
+    })
 
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, UILibrary.Config.CornerRadius)
-    corner.Parent = toggleButton
+    return Section
+end
 
-    local indicator = Instance.new("Frame")
-    indicator.Name = "Indicator"
-    indicator.Parent = toggleButton
-    indicator.Size = UDim2.new(0.4, 0, 0.8, 0)
-    indicator.Position = UDim2.new(0.05, 0, 0.1, 0)
-    indicator.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
-    indicator.BorderSizePixel = 0
+-----------------------------------------------------------
+-- TOGGLE
+-----------------------------------------------------------
+function Bankroll:AddToggle(parent, title, callback)
+    local Toggle = Create("Frame", {
+        Parent = parent,
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 0, 24)
+    })
 
-    local indicatorCorner = Instance.new("UICorner")
-    indicatorCorner.CornerRadius = UDim.new(0, UILibrary.Config.CornerRadius - 1)
-    indicatorCorner.Parent = indicator
+    local Box = Create("Frame", {
+        Parent = Toggle,
+        BackgroundColor3 = Color3.fromRGB(170, 100, 255),
+        Size = UDim2.new(0, 16, 0, 16),
+        Position = UDim2.new(0, 0, 0.5, -8),
+        BorderSizePixel = 0
+    })
 
-    local value = defaultValue or false
-    local connection: RBXScriptConnection? = nil
+    local Label = Create("TextLabel", {
+        Parent = Toggle,
+        BackgroundTransparency = 1,
+        Position = UDim2.new(0, 25, 0, 0),
+        Size = UDim2.new(1, -25, 1, 0),
+        Text = title,
+        Font = Enum.Font.Gotham,
+        TextColor3 = Color3.fromRGB(220, 200, 255),
+        TextSize = 14,
+        TextXAlignment = Enum.TextXAlignment.Left
+    })
 
-    local function updateToggleVisual()
-        if value then
-            indicator:TweenPosition(UDim2.new(0.55, 0, 0.1, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true)
-            toggleButton.BackgroundColor3 = UILibrary.Config.AccentColor
-        else
-            indicator:TweenPosition(UDim2.new(0.05, 0, 0.1, 0), Enum.EasingDirection.Out, Enum.EasingStyle.Quad, 0.2, true)
-            toggleButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-        end
-    end
-
-    updateToggleVisual()
-
-    toggleButton.MouseButton1Click:Connect(function()
-        value = not value
-        updateToggleVisual()
-        if connection then
-            connection:Fire(value)
+   local toggled = false
+    Toggle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            toggled = not toggled
+            Box.BackgroundTransparency = toggled and 0 or 0.7
+            if callback then callback(toggled) end
         end
     end)
 
-    function toggleFrame:GetValue(): boolean
-        return value
-    end
-
-    function toggleFrame:SetValue(newValue: boolean)
-        value = newValue
-        updateToggleVisual()
-    end
-
-    function toggleFrame:OnChanged(callback: (newValue: boolean) -> ()): RBXScriptConnection
-        connection = toggleFrame.Changed:Connect(callback)
-        return connection
-    end
-
-    return toggleFrame
+    return Toggle
 end
 
--- Function to create a dropdown
-function UILibrary.createDropdown(label: string, parent: Frame, options: {string}, defaultValue: string): Frame
-    local dropdownFrame = createBaseElement("Dropdown_" .. label, parent, UDim2.new(1, 0, 0, UILibrary.Config.ItemHeight), UDim2.new(0, 0, 0, 0))
-    dropdownFrame.BackgroundTransparency = 1
+-----------------------------------------------------------
+-- DROPDOWN (Simple)
+-----------------------------------------------------------
+function Bankroll:AddDropdown(parent, title, list, callback)
+    local Holder = Create("Frame", {
+        Parent = parent,
+        BackgroundTransparency = 1,
+        Size = UDim2.new(1, 0, 0, 28)
+    })
 
-    local dropdownLabel = Instance.new("TextLabel")
-    dropdownLabel.Name = "Label"
-    dropdownLabel.Parent = dropdownFrame
-    dropdownLabel.Size = UDim2.new(0.5, 0, 1, 0)
-    dropdownLabel.Position = UDim2.new(0, 0, 0, 0)
-    dropdownLabel.BackgroundTransparency = 1
-    dropdownLabel.Text = label
-    dropdownLabel.TextColor3 = UILibrary.Config.TextColor
-    dropdownLabel.Font = UILibrary.Config.Font
-    dropdownLabel.TextSize = UILibrary.Config.FontSize.Value
-    dropdownLabel.TextXAlignment = Enum.TextXAlignment.Left
-    dropdownLabel.TextYAlignment = Enum.TextYAlignment.Center
+    local Button = Create("TextButton", {
+        Parent = Holder,
+        BackgroundColor3 = Color3.fromRGB(25, 25, 25),
+        BorderSizePixel = 0,
+        Text = title,
+        TextColor3 = Color3.fromRGB(240, 200, 255),
+        TextSize = 14,
+        Font = Enum.Font.Gotham,
+        Size = UDim2.new(1, 0, 1, 0)
+    })
 
-    local dropdownButton = Instance.new("TextButton")
-    dropdownButton.Name = "Button"
-    dropdownButton.Parent = dropdownFrame
-    dropdownButton.Size = UDim2.new(0.45, 0, 0.9, 0)
-    dropdownButton.Position = UDim2.new(0.55, 0, 0.05, 0)
-    dropdownButton.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    dropdownButton.BorderSizePixel = 0
-    dropdownButton.TextColor3 = UILibrary.Config.TextColor
-    dropdownButton.Font = UILibrary.Config.Font
-    dropdownButton.TextSize = UILibrary.Config.FontSize.Value
-    dropdownButton.TextXAlignment = Enum.TextXAlignment.Center
-    dropdownButton.TextYAlignment = Enum.TextYAlignment.Center
+    local ListFrame = Create("Frame", {
+        Parent = Holder,
+        BackgroundColor3 = Color3.fromRGB(22, 22, 22),
+        BorderSizePixel = 0,
+        Position = UDim2.new(0, 0, 1, 2),
+        Size = UDim2.new(1, 0, 0, #list * 20),
+        Visible = false
+    })
 
-    local buttonCorner = Instance.new("UICorner")
-    buttonCorner.CornerRadius = UDim.new(0, UILibrary.Config.CornerRadius)
-    buttonCorner.Parent = dropdownButton
+    local Layout = Instance.new("UIListLayout", ListFrame)
 
-    local currentSelection = defaultValue or options[1]
-    dropdownButton.Text = currentSelection
+    for _, option in ipairs(list) do
+        local Option = Create("TextButton", {
+            Parent = ListFrame,
+            Text = option,
+            BackgroundTransparency = 1,
+            TextColor3 = Color3.fromRGB(255, 200, 255),
+            Font = Enum.Font.Gotham,
+            TextSize = 14,
+            Size = UDim2.new(1, 0, 0, 20)
+        })
 
-    local isOpen = false
-    local dropdownList: Frame? = nil
-
-    local function createList()
-        if dropdownList then dropdownList:Destroy() end
-
-        dropdownList = createBaseElement("DropdownList", parent, UDim2.new(dropdownButton.Size.X.Scale, 0, 0, #options * UILibrary.Config.ItemHeight), dropdownButton.AbsolutePosition)
-        dropdownList.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-        dropdownList.BorderSizePixel = 0
-        dropdownList.Position = UDim2.new(
-            dropdownFrame.Position.X.Scale + dropdownButton.Position.X.Scale, dropdownFrame.Position.X.Offset + dropdownButton.Position.X.Offset,
-            dropdownFrame.Position.Y.Scale + dropdownButton.Position.Y.Scale, dropdownFrame.Position.Y.Offset + dropdownButton.Position.Y.Offset + UILibrary.Config.ItemHeight
-        )
-        dropdownList.ZIndex = 3 -- Ensure it's on top
-
-        local listCorner = Instance.new("UICorner")
-        listCorner.CornerRadius = UDim.new(0, UILibrary.Config.CornerRadius)
-        listCorner.Parent = dropdownList
-
-        local UIListLayout = Instance.new("UIListLayout")
-        UIListLayout.Parent = dropdownList
-        UIListLayout.SortOrder = Enum.SortOrder.LayoutOrder
-        UIListLayout.Padding = UDim.new(0, 2)
-        UIListLayout.FillDirection = Enum.FillDirection.Vertical
-        UIListLayout.HorizontalAlignment = Enum.HorizontalAlignment.Left
-        UIListLayout.VerticalAlignment = Enum.VerticalAlignment.Top
-
-        for i, optionText in ipairs(options) do
-            local optionButton = Instance.new("TextButton")
-            optionButton.Name = "Option_" .. optionText
-            optionButton.Parent = dropdownList
-            optionButton.Size = UDim2.new(1, 0, 0, UILibrary.Config.ItemHeight)
-            optionButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-            optionButton.BorderSizePixel = 0
-            optionButton.TextColor3 = UILibrary.Config.TextColor
-            optionButton.Font = UILibrary.Config.Font
-            optionButton.TextSize = UILibrary.Config.FontSize.Value
-            optionButton.Text = optionText
-            optionButton.TextXAlignment = Enum.TextXAlignment.Center
-            optionButton.TextYAlignment = Enum.TextYAlignment.Center
-            optionButton.LayoutOrder = i
-
-            optionButton.MouseButton1Click:Connect(function()
-                currentSelection = optionText
-                dropdownButton.Text = currentSelection
-                if dropdownList then dropdownList:Destroy() end
-                isOpen = false
-            end)
-
-            optionButton.MouseEnter:Connect(function()
-                optionButton.BackgroundColor3 = UILibrary.Config.AccentColor
-            end)
-            optionButton.MouseLeave:Connect(function()
-                optionButton.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
-            end)
-        end
+        Option.MouseButton1Click:Connect(function()
+            Button.Text = option
+            ListFrame.Visible = false
+            if callback then callback(option) end
+        end)
     end
 
-    dropdownButton.MouseButton1Click:Connect(function()
-        isOpen = not isOpen
-        if isOpen then
-            createList()
-        else
-            if dropdownList then dropdownList:Destroy() end
-        end
+    Button.MouseButton1Click:Connect(function()
+        ListFrame.Visible = not ListFrame.Visible
     end)
 
-    function dropdownFrame:GetValue(): string
-        return currentSelection
-    end
-
-    function dropdownFrame:SetValue(newValue: string)
-        if table.find(options, newValue) then
-            currentSelection = newValue
-            dropdownButton.Text = currentSelection
-        end
-    end
-
-    return dropdownFrame
+    return Holder
 end
 
--- Function to create a basic slider (you would need more advanced logic for actual sliding)
-function UILibrary.createSlider(label: string, parent: Frame, min: number, max: number, defaultValue: number): Frame
-    local sliderFrame = createBaseElement("Slider_" .. label, parent, UDim2.new(1, 0, 0, UILibrary.Config.ItemHeight), UDim2.new(0, 0, 0, 0))
-    sliderFrame.BackgroundTransparency = 1
-
-    local sliderLabel = Instance.new("TextLabel")
-    sliderLabel.Name = "Label"
-    sliderLabel.Parent = sliderFrame
-    sliderLabel.Size = UDim2.new(0.4, 0, 1, 0)
-    sliderLabel.Position = UDim2.new(0, 0, 0, 0)
-    sliderLabel.BackgroundTransparency = 1
-    sliderLabel.Text = label
-    sliderLabel.TextColor3 = UILibrary.Config.TextColor
-    sliderLabel.Font = UILibrary.Config.Font
-    sliderLabel.TextSize = UILibrary.Config.FontSize.Value
-    sliderLabel.TextXAlignment = Enum.TextXAlignment.Left
-    sliderLabel.TextYAlignment = Enum.TextYAlignment.Center
-
-    local sliderTrack = Instance.new("Frame")
-    sliderTrack.Name = "Track"
-    sliderTrack.Parent = sliderFrame
-    sliderTrack.Size = UDim2.new(0.55, 0, 0.3, 0)
-    sliderTrack.Position = UDim2.new(0.45, 0, 0.35, 0)
-    sliderTrack.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-    sliderTrack.BorderSizePixel = 0
-
-    local trackCorner = Instance.new("UICorner")
-    trackCorner.CornerRadius = UDim.new(0, UILibrary.Config.CornerRadius)
-    trackCorner.Parent = sliderTrack
-
-    local sliderFill = Instance.new("Frame")
-    sliderFill.Name = "Fill"
-    sliderFill.Parent = sliderTrack
-    sliderFill.Size = UDim2.new(0, 0, 1, 0) -- Will be updated
-    sliderFill.Position = UDim2.new(0, 0, 0, 0)
-    sliderFill.BackgroundColor3 = UILibrary.Config.AccentColor
-    sliderFill.BorderSizePixel = 0
-
-    local fillCorner = Instance.new("UICorner")
-    fillCorner.CornerRadius = UDim.new(0, UILibrary.Config.CornerRadius)
-    fillCorner.Parent = sliderFill
-
-    local sliderThumb = Instance.new("Frame")
-    sliderThumb.Name = "Thumb"
-    sliderThumb.Parent = sliderTrack
-    sliderThumb.Size = UDim2.new(0, 15, 0, 15)
-    sliderThumb.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
-    sliderThumb.BorderSizePixel = 0
-    sliderThumb.ZIndex = 2
-
-    local thumbCorner = Instance.new("UICorner")
-    thumbCorner.CornerRadius = UDim.new(0, UILibrary.Config.CornerRadius)
-    thumbCorner.Parent = sliderThumb
-
-    local valueLabel = Instance.new("TextLabel")
-    valueLabel.Name = "ValueLabel"
-    valueLabel.Parent = sliderFrame
-    valueLabel.Size = UDim2.new(0.1, 0, 1, 0)
-    valueLabel.Position = UDim2.new(0.9, 0, 0, 0)
-    valueLabel.BackgroundTransparency = 1
-    valueLabel.TextColor3 = UILibrary.Config.TextColor
-    valueLabel.Font = UILibrary.Config.Font
-    valueLabel.TextSize = UILibrary.Config.FontSize.Value
-    valueLabel.TextXAlignment = Enum.TextXAlignment.Center
-    valueLabel.TextYAlignment = Enum.TextYAlignment.Center
-
-    local currentValue = defaultValue or min
-    local isDragging = false
-    local connection: RBXScriptConnection? = nil
-
-    local function updateSliderVisual()
-        local normalizedValue = (currentValue - min) / (max - min)
-        sliderFill.Size = UDim2.new(normalizedValue, 0, 1, 0)
-        sliderThumb.Position = UDim2.new(normalizedValue, -sliderThumb.Size.X.Offset / 2, 0, (sliderTrack.Size.Y.Offset - sliderThumb.Size.Y.Offset) / 2)
-        valueLabel.Text = tostring(math.floor(currentValue))
-    end
-
-    updateSliderVisual()
-
-    sliderThumb.MouseButton1Down:Connect(function()
-        isDragging = true
-    end)
-
-    sliderTrack.MouseButton1Down:Connect(function(x, y)
-        isDragging = true
-        local relativeX = x - sliderTrack.AbsolutePosition.X
-        local newNormalizedValue = math.clamp(relativeX / sliderTrack.AbsoluteSize.X, 0, 1)
-        currentValue = min + (max - min) * newNormalizedValue
-        updateSliderVisual()
-        if connection then
-            connection:Fire(currentValue)
-        end
-    end)
-
-    local mouse = game.Players.LocalPlayer:GetMouse()
-    mouse.MouseUp:Connect(function()
-        isDragging = false
-    end)
-
-    mouse.Move:Connect(function()
-        if isDragging then
-            local relativeX = mouse.X - sliderTrack.AbsolutePosition.X
-            local newNormalizedValue = math.clamp(relativeX / sliderTrack.AbsoluteSize.X, 0, 1)
-            currentValue = min + (max - min) * newNormalizedValue
-            updateSliderVisual()
-            if connection then
-                connection:Fire(currentValue)
-            end
-        end
-    end)
-
-    function sliderFrame:GetValue(): number
-        return currentValue
-    end
-
-    function sliderFrame:SetValue(newValue: number)
-        currentValue = math.clamp(newValue, min, max)
-        updateSliderVisual()
-    end
-
-    function sliderFrame:OnChanged(callback: (newValue: number) -> ()): RBXScriptConnection
-        connection = sliderFrame.Changed:Connect(callback)
-        return connection
-    end
-
-    return sliderFrame
-end
-
-return UILibrary
+return Bankroll
