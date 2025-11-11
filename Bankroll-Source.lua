@@ -279,6 +279,8 @@ UIStroke_6.Parent = Frame
 Window.TabScroll = TabScroll
 Window.Container = Container
 
+return Window
+end
 
 local TabsAdded = 0
 
@@ -1165,8 +1167,4 @@ SwitchClick.MouseButton1Click:Connect(function()
 end)
 
 return Tab
-end
-
-return Window
-
 end
