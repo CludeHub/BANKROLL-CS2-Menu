@@ -1167,7 +1167,6 @@ end)
 return Tab
 end
 
-return Window
 
 end
 
