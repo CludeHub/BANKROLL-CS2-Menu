@@ -279,6 +279,8 @@ UIStroke_6.Parent = Frame
 Window.TabScroll = TabScroll
 Window.Container = Container
 
+return Window
+end
 
 local TabsAdded = 0
 
@@ -470,6 +472,21 @@ local ThisButton = TabButton
 Tab.Left = Left
 Tab.Right = Right
 
+	SwitchClick.MouseButton1Click:Connect(function()
+    for _, tab in pairs(Window.Container:GetChildren()) do
+        tab.Visible = (tab == Tab.Container)
+    end
+
+    for _, btn in pairs(Window.TabScroll:GetChildren()) do
+        if btn:FindFirstChild("Text") then
+            btn.Text.TextColor3 = (btn == ThisButton) and Color3.fromRGB(255,255,255) or Color3.fromRGB(127,127,127)
+        end
+    end
+end)
+
+	return Tab
+end
+
 
 
 
@@ -551,6 +568,9 @@ UIGradient_6.Rotation = 90
 UIGradient_6.Transparency = NumberSequence.new({NumberSequenceKeypoint.new(0,0,0),NumberSequenceKeypoint.new(1,0,0)})
 UIGradient_6.Offset = Vector2.new(0,0.6000000238418579)
 UIGradient_6.Parent = section
+
+	return Section
+end
 
 
 function Section:AddToggle(ToggleName, ToggleDefault, ToggleCallback)
@@ -1141,31 +1161,6 @@ local UIAspectRatioConstraint = Instance.new('UIAspectRatioConstraint')
                 Callback(v)
             end)
         end)
-    end
+				end
 
-    
-
-    return ListBox
-end
-
-return Section
-
-end
-
-SwitchClick.MouseButton1Click:Connect(function()
-    for _, tab in pairs(Window.Container:GetChildren()) do
-        tab.Visible = (tab == Tab.Container)
-    end
-
-    for _, btn in pairs(Window.TabScroll:GetChildren()) do
-        if btn:FindFirstChild("Text") then
-            btn.Text.TextColor3 = (btn == ThisButton) and Color3.fromRGB(255,255,255) or Color3.fromRGB(127,127,127)
-        end
-    end
-end)
-
-return Tab
-end
-
-return Window
-end
+return UIBankroll
