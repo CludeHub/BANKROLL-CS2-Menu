@@ -1167,9 +1167,5 @@ end)
 return Tab
 end
 
-
+return Window
 end
-
-return Bankroll
-
-
