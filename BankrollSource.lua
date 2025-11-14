@@ -458,6 +458,22 @@ local ThisButton = TabButton
 Tab.Left = Left
 Tab.Right = Right
 
+        SwitchClick.MouseButton1Click:Connect(function()
+for _, tab in pairs(Window.Container:GetChildren()) do
+tab.Visible = (tab == Tab.Container)
+end
+
+for _, btn in pairs(Window.TabScroll:GetChildren()) do  
+    if btn:FindFirstChild("Text") then  
+        btn.Text.TextColor3 = (btn == ThisButton) and Color3.fromRGB(255,255,255) or Color3.fromRGB(127,127,127)  
+    end  
+end
+
+end)
+
+return Tab
+    end
+
 function Tab:AddSection(name, pos)
 local Section = {}
 pos = pos or "left"
@@ -1123,22 +1139,6 @@ end
 
 return Section
 
-end
-
-SwitchClick.MouseButton1Click:Connect(function()
-for _, tab in pairs(Window.Container:GetChildren()) do
-tab.Visible = (tab == Tab.Container)
-end
-
-for _, btn in pairs(Window.TabScroll:GetChildren()) do  
-    if btn:FindFirstChild("Text") then  
-        btn.Text.TextColor3 = (btn == ThisButton) and Color3.fromRGB(255,255,255) or Color3.fromRGB(127,127,127)  
-    end  
-end
-
-end)
-
-return Tab
 end
 
 end
