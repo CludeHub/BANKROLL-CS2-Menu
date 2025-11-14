@@ -1,6 +1,6 @@
 local UIBankroll = {}
 
-function UIBankroll:AddWindow(Title)
+function UIBankroll:AddWindow(TitleHub)
 local Window = {}
 local windowSize = UDim2.new(0.5600000023841858,0,0.9390000104904175,0)
 
@@ -241,7 +241,7 @@ Title.BackgroundTransparency = 1
 Title.BorderSizePixel = 1
 Title.TextColor3 = Color3.fromRGB(255,191,255)
 Title.TextScaled = true
-Title.Text = title or "Bankroll Mafia"
+Title.Text = TitleHub or "Bankroll Mafia"
 Title.TextSize = 8
 Title.Font = Enum.Font.SourceSansSemibold
 Title.TextTransparency = 0
